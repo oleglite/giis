@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>571</width>
+    <height>374</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>571</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>нарисовать</string>
+    </property>
+    <widget class="QMenu" name="menu_2">
+     <property name="title">
+      <string>отрезок</string>
+     </property>
+     <addaction name="action_2"/>
+     <addaction name="action_3"/>
+     <addaction name="action_4"/>
+    </widget>
+    <addaction name="menu_2"/>
+   </widget>
+   <addaction name="menu"/>
+  </widget>
+  <action name="action_2">
+   <property name="text">
+    <string>ЦДА</string>
+   </property>
+  </action>
+  <action name="action_3">
+   <property name="text">
+    <string>Алгоритм Брезенхема</string>
+   </property>
+  </action>
+  <action name="action_4">
+   <property name="text">
+    <string>Алгоритм Ву</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
