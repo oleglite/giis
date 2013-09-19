@@ -49,6 +49,10 @@ class Plot(QObject):
     def size(self):
         return self._size_point
 
+    def clear(self):
+        for point in self:
+            self[point] = self._default_value
+
     def __getitem__(self, point):
         return self._vector[point.x][point.y][point.z][point.a]
 

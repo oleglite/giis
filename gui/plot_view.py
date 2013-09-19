@@ -25,6 +25,14 @@ class PlotView(QWidget):
         size_policy.setHeightForWidth(True)
         self.setSizePolicy(size_policy)
 
+    @property
+    def model(self):
+        return self._plot
+
+    @property
+    def controller(self):
+        return self._controller
+
     def heightForWidth(self, width):
         ratio = float(self._plot.size.y) / self._plot.size.x
         return int(width * ratio)

@@ -5,6 +5,7 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 
 import plot
+import algorithms
 
 
 class PlotController(QObject):
