@@ -10,6 +10,7 @@ import plot_view
 import plot_controller
 import plot
 import algorithms
+import scroll_area
 
 
 class MainWindow(QMainWindow):
@@ -37,14 +38,14 @@ class MainWindow(QMainWindow):
         self.plot_widget = plot_view.PlotView(None, plot_model, controller)
         plot_model.updated.connect(self.plot_widget.update)
 
-        scroll_area = QScrollArea(self)
-        scroll_area.setBackgroundRole(QPalette.Dark)
-        scroll_area.setWidget(self.plot_widget)
-        scroll_area.resize(self.base_size)
+        scroll_area_widget = scroll_area.NavigatableScrollArea(self)
+        scroll_area_widget.resize(self.base_size)
+        scroll_area_widget.setBackgroundRole(QPalette.Dark)
+        scroll_area_widget.setWidget(self.plot_widget)
 
-        self.plot_widget.resize(self.base_size)
 
-        return scroll_area
+        return scroll_area_widget
+
 
     def _create_menus(self):
         self.menuBar().addMenu(self._create_draw_menu())

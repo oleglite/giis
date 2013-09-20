@@ -9,6 +9,7 @@ class PlotLook:
     background_brush = QBrush(Qt.white)
 
     grid_pen = QPen(Qt.gray)
+    min_grid_drawing_pixel_size = QSize(3, 3)
 
 
 class PlotView(QWidget):
@@ -21,9 +22,7 @@ class PlotView(QWidget):
 
         self._pixel_size = None
 
-        size_policy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        size_policy.setHeightForWidth(True)
-        self.setSizePolicy(size_policy)
+        #self._zoom_manager = PlotZoomManager(self)
 
     @property
     def model(self):
@@ -33,18 +32,24 @@ class PlotView(QWidget):
     def controller(self):
         return self._controller
 
-    def heightForWidth(self, width):
-        ratio = float(self._plot.size.y) / self._plot.size.x
-        return int(width * ratio)
-
     def paintEvent(self, event):
         super(PlotView, self).paintEvent(event)
 
         painter = QPainter(self)
 
         self.__draw_background(painter)
-        self.__draw_grid(painter)
+        if (self._pixel_size.width() >= self._look.min_grid_drawing_pixel_size.width() and
+                self._pixel_size.height() >= self._look.min_grid_drawing_pixel_size.height()):
+            self.__draw_grid(painter)
+
         self.__draw_pixels(painter)
+
+    # def wheelEvent(self, event):
+    #     #if event.modifiers() & self._zoom_manager.modifiers:
+    #     if event.delta() > 0:
+    #         self._zoom_manager.zoom_in()
+    #     else:
+    #         self._zoom_manager.zoom_out()
 
     def resizeEvent(self, event):
         pixel_width = float(self.rect().width()) / self._plot.size.x
@@ -52,8 +57,10 @@ class PlotView(QWidget):
         self._pixel_size = QSizeF(pixel_width, pixel_height)
 
     def mousePressEvent(self, event):
-        pixel = self._point_pixel(event.posF())
-        self._controller.click(pixel)
+        if event.button() == Qt.LeftButton:
+            pixel = self._point_pixel(event.posF())
+            self._controller.click(pixel)
+        return super(PlotView, self).mousePressEvent(event)
 
     def _pixel_rect(self, pixel):
         left = pixel.x * self._pixel_size.width()
@@ -94,3 +101,5 @@ class PlotView(QWidget):
             if value:
                 painter.setBrush(QBrush(value))
                 painter.drawRect(rect)
+
+
