@@ -16,7 +16,7 @@ import scroll_area
 class MainWindow(QMainWindow):
     TITLE = 'Pixels'
     INIT_PIXEL_SIZE = 16
-    PLOT_SIZE = plot.Point(60, 40, 1, 1)
+    PLOT_SIZE = plot.Point(100, 80, 1, 1)
 
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -42,7 +42,6 @@ class MainWindow(QMainWindow):
         scroll_area_widget.resize(self.base_size)
         scroll_area_widget.setBackgroundRole(QPalette.Dark)
         scroll_area_widget.setWidget(self.plot_widget)
-
 
         return scroll_area_widget
 
@@ -77,6 +76,17 @@ class MainWindow(QMainWindow):
         clear_action = QAction(u'очистить', toolbar)
         clear_action.triggered.connect(self.plot_widget.model.clear)
 
+        debug_mode_action = QAction(u'дебаг', toolbar)
+        debug_mode_action.triggered.connect(self.change_debug_mode_status)
+
+        debug_next_step = QAction(u'далее', toolbar)
+        debug_next_step.triggered.connect(self.plot_widget.controller.draw_next)
+
         toolbar.addAction(clear_action)
+        toolbar.addAction(debug_mode_action)
+        toolbar.addAction(debug_next_step)
 
         self.addToolBar(Qt.TopToolBarArea, toolbar)
+
+    def change_debug_mode_status(self):
+        self.plot_widget.controller.set_debug_mode(not self.plot_widget.controller.debug_mode())
