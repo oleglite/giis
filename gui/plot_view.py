@@ -22,8 +22,6 @@ class PlotView(QWidget):
 
         self._pixel_size = None
 
-        #self._zoom_manager = PlotZoomManager(self)
-
     @property
     def model(self):
         return self._plot
@@ -38,18 +36,10 @@ class PlotView(QWidget):
         painter = QPainter(self)
 
         self.__draw_background(painter)
-        if (self._pixel_size.width() >= self._look.min_grid_drawing_pixel_size.width() and
-                self._pixel_size.height() >= self._look.min_grid_drawing_pixel_size.height()):
+        if self.is_grid_enabled():
             self.__draw_grid(painter)
 
         self.__draw_pixels(painter)
-
-    # def wheelEvent(self, event):
-    #     #if event.modifiers() & self._zoom_manager.modifiers:
-    #     if event.delta() > 0:
-    #         self._zoom_manager.zoom_in()
-    #     else:
-    #         self._zoom_manager.zoom_out()
 
     def resizeEvent(self, event):
         pixel_width = float(self.rect().width()) / self._plot.size.x
@@ -61,6 +51,10 @@ class PlotView(QWidget):
             pixel = self._point_pixel(event.posF())
             self._controller.click(pixel)
         return super(PlotView, self).mousePressEvent(event)
+
+    def is_grid_enabled(self):
+        return (self._pixel_size.width() >= self._look.min_grid_drawing_pixel_size.width() and
+                self._pixel_size.height() >= self._look.min_grid_drawing_pixel_size.height())
 
     def _pixel_rect(self, pixel):
         left = pixel.x * self._pixel_size.width()
@@ -101,5 +95,3 @@ class PlotView(QWidget):
             if value:
                 painter.setBrush(QBrush(value))
                 painter.drawRect(rect)
-
-
