@@ -1,6 +1,6 @@
 giis
 ====
-Realization of rasterization algorithms on python with PySide.
+Realization of rasterization algorithms in python with PySide.
 
 Done:
  - Digital Differential Analyzer
