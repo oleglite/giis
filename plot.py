@@ -69,3 +69,25 @@ class Plot(QObject):
                 for y in xrange(self._size_point.y):
                     for x in xrange(self._size_point.x):
                         yield Point(x, y, z, a)
+
+
+class DecoratedPlot(Plot):
+    def __init__(self, parent, size_point, decoration_value, default_value=0):
+        super(DecoratedPlot, self).__init__(parent, size_point, default_value)
+
+        self._decoration_value = decoration_value
+        self._decorated_points = []
+
+    def add_decoration_point(self, point):
+        self._decorated_points.append(point)
+        self.updated.emit()
+
+    def clear_decoration(self):
+        self._decorated_points = []
+        self.updated.emit()
+
+    def __getitem__(self, point):
+        if point in self._decorated_points:
+            return self._decoration_value
+        else:
+            return super(DecoratedPlot, self).__getitem__(point)

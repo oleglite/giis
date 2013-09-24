@@ -32,7 +32,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setWindowTitle(self.TITLE)
 
     def _create_plot(self):
-        plot_model = plot.Plot(self, self.PLOT_SIZE)
+        plot_model = plot.DecoratedPlot(self, self.PLOT_SIZE, Qt.red)
 
         controller = plot_controller.PlotController(plot_model, algorithms.DDA, Qt.black)
         self.plot_widget = plot_view.PlotView(None, plot_model, controller)

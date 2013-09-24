@@ -31,7 +31,9 @@ class PlotController(QObject):
 
     def click(self, pixel):
         self._clicks.append(pixel)
+        self._plot.add_decoration_point(pixel)
         if len(self._clicks) == self._algorithm.points_number:
+            self._plot.clear_decoration()
             self._activate()
             self._clicks = []
 
