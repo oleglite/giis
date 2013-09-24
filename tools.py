@@ -16,17 +16,6 @@ def sign(number):
     else:
         return 0
 
-
-def state_watcher(state_function, call_on_change):
-    def wrap(func):
-        def decorator(*args, **kwargs):
-            state = state_function()
-            func(*args, **kwargs)
-            if state != state_function():
-                call_on_change()
-        return decorator
-    return wrap
-
 class StateWatcher:
     def __init__(self, state, on_changed):
         self._state = state
