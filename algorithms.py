@@ -29,17 +29,17 @@ def DDA(draw_func, point1, point2):
     x2, y2 = point2.x, point2.y
 
     length = max(abs(x2 - x1), abs(y2 - y1))
-    if not length:
+    if length <= 0:
         length = 1
 
     dx = float(x2 - x1) / length
     dy = float(y2 - y1) / length
 
-    x = x1 + 0.5 * tools.sign(dx)
-    y = y1 + 0.5 * tools.sign(dy)
+    x = x1
+    y = y1
 
     for i in xrange(int(length) + 1):
-        draw_func(plot.Point(int(x), int(y)))
+        draw_func(plot.Point(int(round(x)), int(round(y))))
         x += dx
         y += dy
 
