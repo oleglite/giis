@@ -16,16 +16,31 @@ def sign(number):
     else:
         return 0
 
-def get_subclasses(module, cls):
-    """Yield the classes in module ``mod`` that inherit from ``cls``"""
-    for name, obj in inspect.getmembers(module):
-        if hasattr(obj, "__bases__") and cls in obj.__bases__:
-            yield obj
 
-# [a, [b, [d: None], c, None]]
-def module_class_hierarchy(module, cls):
-    if not hasattr(cls, "__bases__") or not cls.__bases__:
-        return None
-    return {module_class_hierarchy(module, sub)
-            for sub in get_subclasses(module, cls)}
+def state_watcher(state_function, call_on_change):
+    def wrap(func):
+        def decorator(*args, **kwargs):
+            state = state_function()
+            func(*args, **kwargs)
+            if state != state_function():
+                call_on_change()
+        return decorator
+    return wrap
 
+class StateWatcher:
+    def __init__(self, state, on_changed):
+        self._state = state
+        self._on_changed = on_changed
+
+        self._grabbed_state = None
+
+    def grab(self):
+        assert self._grabbed_state is None
+        self._grabbed_state = self._state()
+
+    def check(self):
+        assert self._grabbed_state is not None
+        current_state = self._state()
+        if current_state != self._grabbed_state:
+            self._on_changed(current_state)
+        self._grabbed_state = None

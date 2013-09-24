@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>Actions-new-window-icon.png</file>
+    <file>Actions-properties-icon.png</file>
+    <file>Arrow-right-icon.png</file>
+  </qresource>
+</RCC>

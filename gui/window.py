@@ -4,7 +4,7 @@
 
 from PySide.QtCore import *
 from PySide.QtGui import *
-import uiloader
+from ui.mainwindow import Ui_MainWindow
 
 import plot_view
 import plot_controller
@@ -13,28 +13,28 @@ import algorithms
 import scroll_area
 
 
-class MainWindow(QMainWindow):
+class MainWindow(QMainWindow, Ui_MainWindow):
     TITLE = 'Pixels'
     INIT_PIXEL_SIZE = 16
-    PLOT_SIZE = plot.Point(100, 80, 1, 1)
+    PLOT_SIZE = plot.Point(80, 60, 1, 1)
 
     def __init__(self):
         super(MainWindow, self).__init__()
-        #uiloader.loadUi('gui/mainwindow.ui', self)
+        self.setupUi(self)
 
         self.base_size = QSize(self.PLOT_SIZE.x * self.INIT_PIXEL_SIZE,
                                self.PLOT_SIZE.y * self.INIT_PIXEL_SIZE)
 
         self.setCentralWidget(self._create_plot())
         self._create_menus()
-        self._create_toolbar()
+        self._connect_actions()
 
         self.setWindowTitle(self.TITLE)
 
     def _create_plot(self):
         plot_model = plot.Plot(self, self.PLOT_SIZE)
 
-        controller = plot_controller.PlotController(plot_model, algorithms.CDA, Qt.black)
+        controller = plot_controller.PlotController(plot_model, algorithms.DDA, Qt.black)
         self.plot_widget = plot_view.PlotView(None, plot_model, controller)
         plot_model.updated.connect(self.plot_widget.update)
 
@@ -70,23 +70,13 @@ class MainWindow(QMainWindow):
         new_algorithm = algorithms.families[family_name][algorithm_name]
         self.plot_widget.controller.set_algorithm(new_algorithm)
 
-    def _create_toolbar(self):
-        toolbar = QToolBar(self)
+    def _connect_actions(self):
+        self.actionClean.triggered.connect(self.plot_widget.model.clear)
+        self.actionDebug.toggled.connect(self.change_debug_mode_status)
+        self.actionNext.triggered.connect(self.plot_widget.controller.draw_next)
 
-        clear_action = QAction(u'очистить', toolbar)
-        clear_action.triggered.connect(self.plot_widget.model.clear)
+        self.actionNext.setEnabled(False)
+        self.plot_widget.controller.queue_status_changed.connect(self.actionNext.setEnabled)
 
-        debug_mode_action = QAction(u'дебаг', toolbar)
-        debug_mode_action.triggered.connect(self.change_debug_mode_status)
-
-        debug_next_step = QAction(u'далее', toolbar)
-        debug_next_step.triggered.connect(self.plot_widget.controller.draw_next)
-
-        toolbar.addAction(clear_action)
-        toolbar.addAction(debug_mode_action)
-        toolbar.addAction(debug_next_step)
-
-        self.addToolBar(Qt.TopToolBarArea, toolbar)
-
-    def change_debug_mode_status(self):
-        self.plot_widget.controller.set_debug_mode(not self.plot_widget.controller.debug_mode())
+    def change_debug_mode_status(self, checked):
+        self.plot_widget.controller.set_debug_mode(checked)

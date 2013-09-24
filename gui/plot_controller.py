@@ -5,17 +5,29 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 
 import plot
+import plot_painter
 import algorithms
+import tools
 
 
 class PlotController(QObject):
-    def __init__(self, plot, algorithm, base_color):
-        self._plot = plot
+    queue_status_changed = Signal(bool)
+
+    def __init__(self, plot_model, algorithm, base_color):
+        super(PlotController, self).__init__()
+
+        self._plot = plot_model
         self.set_algorithm(algorithm)
         self._base_color = base_color
         self._clicks = []
+
         self._debug_mode = False
-        self._draw_queue = []
+        self._plot_painter = plot_painter.PlotPainter(self._plot, base_color)
+        self._queued_plot_painter = plot_painter.QueuedPlotPainter(self._plot, base_color)
+
+
+        self.next_state_wathcer = tools.StateWatcher(state=self._queued_plot_painter.has_next,
+                                                     on_changed=lambda state: self.queue_status_changed.emit(state))
 
     def click(self, pixel):
         self._clicks.append(pixel)
@@ -27,35 +39,28 @@ class PlotController(QObject):
         assert hasattr(algorithm, 'points_number')
         self._algorithm = algorithm
 
-    def debug_mode(self):
-        return self._debug_mode
-
     def set_debug_mode(self, is_enabled):
-        if self.debug_mode():
-            while self._draw_queue:
-                self.draw_next()
+        self.next_state_wathcer.grab()
+
+        if self._debug_mode:
+            self._queued_plot_painter.draw_all()
         self._debug_mode = is_enabled
 
+        self.next_state_wathcer.check()
+
     def _activate(self):
+        self.next_state_wathcer.grab()
         try:
-            if self.debug_mode():
-                self._algorithm(self._store, *self._clicks)
-            else:
-                self._algorithm(self._draw, *self._clicks)
+            self._algorithm(self._current_plot_painter().draw, *self._clicks)
         except IndexError:
             print 'out of range'
+        self.next_state_wathcer.check()
 
-    def _draw(self, x, y, a=1.0):
-        point = plot.Point(int(x), int(y))
-
-        color = QColor(self._base_color)
-        color.setAlphaF(a)
-        self._plot[point] = color
-
-    def _store(self, x, y, a=1.0):
-        self._draw_queue.append((x, y, a))
+    def _current_plot_painter(self):
+        return self._queued_plot_painter if self._debug_mode else self._plot_painter
 
     def draw_next(self):
-        if self.debug_mode() and self._draw_queue:
-            point = self._draw_queue.pop(0)
-            self._draw(*point)
+        if self._debug_mode:
+            self.next_state_wathcer.grab()
+            self._queued_plot_painter.draw_next()
+            self.next_state_wathcer.check()
