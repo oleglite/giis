@@ -28,6 +28,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setCentralWidget(self._create_plot())
         self._create_menus()
         self._connect_actions()
+        self._create_status_bar()
 
         self.setWindowTitle(self.TITLE)
 
@@ -49,6 +50,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def _create_menus(self):
         self.menuBar().addMenu(self._create_draw_menu())
 
+    def _create_status_bar(self):
+        self.algorithmLabel = QLabel('')
+        self.statusBar.addWidget(self.algorithmLabel)
+        self.update_status_bar()
+
     def _create_draw_menu(self):
         draw_menu = QMenu(u'нарисовать')
 
@@ -69,6 +75,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         new_algorithm = algorithms.families[family_name][algorithm_name]
         self.plot_widget.controller.set_algorithm(new_algorithm)
+        self.update_status_bar()
+
+    def update_status_bar(self):
+        algorithm = self.plot_widget.controller.algorithm
+        text = '%s: %s' % (algorithm.family, algorithm.name)
+        self.algorithmLabel.setText(text)
 
     def _connect_actions(self):
         self.actionClean.triggered.connect(self.plot_widget.model.clear)

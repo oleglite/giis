@@ -38,6 +38,11 @@
    <addaction name="actionDebug"/>
    <addaction name="actionNext"/>
   </widget>
+  <widget class="QStatusBar" name="statusBar">
+   <property name="sizeGripEnabled">
+    <bool>true</bool>
+   </property>
+  </widget>
   <action name="actionClean">
    <property name="icon">
     <iconset>
@@ -56,7 +61,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="ui/resources.qrc">
+    <iconset resource="resources.qrc">
      <normaloff>:/icons/Actions-properties-icon.png</normaloff>:/icons/Actions-properties-icon.png</iconset>
    </property>
    <property name="text">
@@ -68,7 +73,7 @@
   </action>
   <action name="actionNext">
    <property name="icon">
-    <iconset resource="ui/resources.qrc">
+    <iconset resource="resources.qrc">
      <normaloff>:/icons/Arrow-right-icon.png</normaloff>:/icons/Arrow-right-icon.png</iconset>
    </property>
    <property name="text">
@@ -80,7 +85,7 @@
   </action>
  </widget>
  <resources>
-  <include location="ui/resources.qrc"/>
+  <include location="resources.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -37,6 +37,10 @@ class PlotController(QObject):
             self._activate()
             self._clicks = []
 
+    @property
+    def algorithm(self):
+        return self._algorithm
+
     def set_algorithm(self, algorithm):
         assert hasattr(algorithm, 'points_number')
         self._algorithm = algorithm

@@ -10,6 +10,8 @@ families = {}
 def algorithm(points, family, name):
     def wrap(func):
         func.points_number = points
+        func.family = family
+        func.name = name
 
         family_dict = families.setdefault(family, dict())
         family_dict[name] = func
