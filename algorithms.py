@@ -45,27 +45,24 @@ def DDA(draw_func, point1, point2):
         x += dx
         y += dy
 
+
 @algorithm(points=2, family=u'Отрезок', name=u'Алгоритм Брезенхема')
 def bresenham(draw_func, point1, point2):
     x1, y1 = point1.x, point1.y
     x2, y2 = point2.x, point2.y
-    x, y = x1, y1
-
     dx = abs(x2 - x1)
     dy = abs(y2 - y1)
-    e = 2 * (y2 - y1) - (x2 - x1)
-
     signX = 1 if x1 < x2 else -1
     signY = 1 if y1 < y2 else -1
 
-    i = 0
-    while i <= dx:
-        #a = 1 / (1 + abs(e) / float(dx + dy))
-        draw_func(plot.Point(int(x), int(y)))
-        if e >= 0:
-            y += signY
-            e -= 2 * dx
-        else:
-            x += signX
-            e += 2 * dy
-            i += 1
+    error = dx - dy
+    while x1 != x2 or y1 != y2:
+        draw_func(plot.Point(x1, y1))
+        error2 = error * 2
+        if error2 > -dy:
+            error -= dy
+            x1 += signX
+        if error2 < dx:
+            error += dx
+            y1 += signY
+    draw_func(point2)
