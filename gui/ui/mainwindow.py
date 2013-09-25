@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Wed Sep 25 13:23:07 2013
+# Created: Wed Sep 25 20:34:39 2013
 #      by: pyside-uic 0.2.14 running on PySide 1.1.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -25,11 +25,12 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.debugTextBrowser = QtGui.QTextBrowser(self.centralwidget)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.debugTextBrowser.sizePolicy().hasHeightForWidth())
         self.debugTextBrowser.setSizePolicy(sizePolicy)
+        self.debugTextBrowser.setMinimumSize(QtCore.QSize(350, 0))
         self.debugTextBrowser.setLineWidth(0)
         self.debugTextBrowser.setAcceptRichText(False)
         self.debugTextBrowser.setObjectName("debugTextBrowser")

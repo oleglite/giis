@@ -66,3 +66,27 @@ def bresenham(draw_func, point1, point2):
             error += dx
             y1 += signY
     draw_func(point2)
+
+@algorithm(points=2, family=u'Отрезок', name=u'Алгоритм Ву')
+def wu(draw_func, point1, point2):
+    x1, y1 = point1.x, point1.y
+    x2, y2 = point2.x, point2.y
+    dx = abs(x2 - x1)
+    dy = abs(y2 - y1)
+    signX = 1 if x1 < x2 else -1
+    signY = 1 if y1 < y2 else -1
+    gradientY = float(dy) / dx if dx else 1
+    gradientX = float(dx) / dy if dy else 1
+
+    if dx > dy:
+        for x in xrange(x1, x2 + signX, signX):
+            y = y1 + abs(x - x1) * gradientY * signY
+            y_pos = tools.fpart(y)
+            draw_func(plot.Point(x, int(y)), (1 - y_pos))
+            draw_func(plot.Point(x, int(y) + 1), y_pos)
+    else:
+        for y in xrange(y1, y2 + signY, signY):
+            x = x1 + abs(y - y1) * gradientX * signX
+            x_pos = tools.fpart(x)
+            draw_func(plot.Point(int(x), y), (1 - x_pos))
+            draw_func(plot.Point(int(x) + 1, y), x_pos)

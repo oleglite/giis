@@ -78,6 +78,10 @@ class PlotController(QObject):
     def draw_next(self):
         if self._debug_mode:
             self.next_state_wathcer.grab()
-            point = self._queued_plot_painter.draw_next()
-            self.debug_log.emit('draw ' + str(point))
+            point, alpha = self._queued_plot_painter.draw_next()
             self.next_state_wathcer.check()
+
+            message = 'draw point: x=%i, y=%i' % (point.x, point.y)
+            if alpha is not None:
+                message += ', a=' + str(round(alpha, 2))
+            self.debug_log.emit(message)

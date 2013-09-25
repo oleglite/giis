@@ -16,6 +16,9 @@ def sign(number):
     else:
         return 0
 
+def fpart(num):
+    return num - int(num)
+
 class StateWatcher:
     def __init__(self, state, on_changed):
         self._state = state
