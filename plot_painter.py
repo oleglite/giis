@@ -26,6 +26,7 @@ class QueuedPlotPainter(PlotPainter):
     def draw_next(self):
         point = self._queue.pop(0)
         self._real_draw(point)
+        return point
 
     def draw_all(self):
         while self._queue:

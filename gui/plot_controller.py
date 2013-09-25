@@ -12,6 +12,7 @@ import tools
 
 class PlotController(QObject):
     queue_status_changed = Signal(bool)
+    debug_log = Signal(str)
 
     def __init__(self, plot_model, algorithm, base_color):
         super(PlotController, self).__init__()
@@ -58,6 +59,15 @@ class PlotController(QObject):
         self.next_state_wathcer.grab()
         try:
             self._algorithm(self._current_plot_painter().draw, *self._clicks)
+
+            if self._debug_mode:
+                points_str = '\n'.join(str(click) for click in self._clicks)
+                message = 'New figure (%s: %s) \nbase points:\n%s' % (self._algorithm.family,
+                                                                self._algorithm.name,
+                                                                points_str)
+                delimeter = '-' * 50
+                message = delimeter + '\n' + message + '\n' + delimeter
+                self.debug_log.emit(message)
         except IndexError:
             print 'out of range'
         self.next_state_wathcer.check()
@@ -68,5 +78,6 @@ class PlotController(QObject):
     def draw_next(self):
         if self._debug_mode:
             self.next_state_wathcer.grab()
-            self._queued_plot_painter.draw_next()
+            point = self._queued_plot_painter.draw_next()
+            self.debug_log.emit('draw ' + str(point))
             self.next_state_wathcer.check()
