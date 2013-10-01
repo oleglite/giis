@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="icons">
+    <file>Grid.png</file>
     <file>Actions-new-window-icon.png</file>
     <file>Actions-properties-icon.png</file>
     <file>Arrow-right-icon.png</file>

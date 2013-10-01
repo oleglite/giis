@@ -72,6 +72,8 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionClean"/>
+   <addaction name="actionEnableGrid"/>
+   <addaction name="separator"/>
    <addaction name="actionDebug"/>
    <addaction name="actionNext"/>
   </widget>
@@ -118,6 +120,21 @@
    </property>
    <property name="toolTip">
     <string>Далее</string>
+   </property>
+  </action>
+  <action name="actionEnableGrid">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/Grid.png</normaloff>:/icons/Grid.png</iconset>
+   </property>
+   <property name="text">
+    <string>enable grid</string>
    </property>
   </action>
  </widget>

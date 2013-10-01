@@ -9,11 +9,10 @@ class PlotLook:
     background_brush = QBrush(Qt.white)
 
     grid_pen = QPen(Qt.gray)
-    min_grid_drawing_pixel_size = QSize(3, 3)
 
 
 class PlotView(QWidget):
-    def __init__(self, parent, plot, controller, look=PlotLook()):
+    def __init__(self, parent, plot, controller, look=PlotLook(), grid_enabled=True):
         super(PlotView, self).__init__(parent)
 
         self._plot = plot
@@ -21,6 +20,7 @@ class PlotView(QWidget):
         self._look = look
 
         self._pixel_size = None
+        self._grid_enabled = grid_enabled
 
     @property
     def model(self):
@@ -36,10 +36,10 @@ class PlotView(QWidget):
         painter = QPainter(self)
 
         self.__draw_background(painter)
-        if self.is_grid_enabled():
-            self.__draw_grid(painter)
-
         self.__draw_pixels(painter)
+
+        if self.grid_enabled():
+            self.__draw_grid(painter)
 
     def resizeEvent(self, event):
         pixel_width = float(self.rect().width()) / self._plot.size.x
@@ -52,9 +52,12 @@ class PlotView(QWidget):
             self._controller.click(pixel)
         return super(PlotView, self).mousePressEvent(event)
 
-    def is_grid_enabled(self):
-        return (self._pixel_size.width() >= self._look.min_grid_drawing_pixel_size.width() and
-                self._pixel_size.height() >= self._look.min_grid_drawing_pixel_size.height())
+    def grid_enabled(self):
+        return self._grid_enabled
+
+    def set_grid_enabled(self, is_enabled):
+        self._grid_enabled = is_enabled
+        self.update()
 
     def _pixel_rect(self, pixel):
         left = pixel.x * self._pixel_size.width()
@@ -94,4 +97,5 @@ class PlotView(QWidget):
             rect = self._pixel_rect(pixel)
             if value:
                 painter.setBrush(QBrush(value))
+                painter.setPen(Qt.NoPen)
                 painter.drawRect(rect)

@@ -90,6 +90,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionClean.triggered.connect(self._plot_widget.model.clear)
         self.actionDebug.toggled.connect(self._change_debug_mode_status)
         self.actionNext.triggered.connect(self._plot_widget.controller.draw_next)
+        self.actionEnableGrid.toggled.connect(self._plot_widget.set_grid_enabled)
 
         self.actionNext.setEnabled(False)
         self._plot_widget.controller.queue_status_changed.connect(self.actionNext.setEnabled)
