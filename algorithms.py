@@ -75,8 +75,19 @@ def wu(draw_func, point1, point2):
     dy = abs(y2 - y1)
     signX = 1 if x1 < x2 else -1
     signY = 1 if y1 < y2 else -1
-    gradientY = float(dy) / dx if dx else 1
-    gradientX = float(dx) / dy if dy else 1
+
+    if not dx:
+        for y in xrange(y1, y2 + signY, signY):
+            draw_func(plot.Point(x1, y))
+        return
+
+    if not dy:
+        for x in xrange(x1, x2 + signX, signX):
+            draw_func(plot.Point(x, y1))
+        return
+
+    gradientY = float(dy) / dx
+    gradientX = float(dx) / dy
 
     if dx > dy:
         for x in xrange(x1, x2 + signX, signX):
