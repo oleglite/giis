@@ -1,32 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from plot import figure
 
 import tools
-import plot
+import collections
 
-families = {}
+by_name = collections.OrderedDict()
 
 
-def algorithm(points, family, name):
+def algorithm(name, figure_cls):
     def wrap(func):
-        func.points_number = points
-        func.family = family
         func.name = name
-
-        family_dict = families.setdefault(family, dict())
-        family_dict[name] = func
-
+        func.Figure = figure_cls
+        by_name[name] = func
         return func
     return wrap
 
 
-@algorithm(points=1, family=u'Точка', name=u'точка')
-def dot(draw_func, point):
-    draw_func(point)
-
-
-@algorithm(points=2, family=u'Отрезок', name=u'ЦДА')
-def DDA(draw_func, point1, point2):
+@algorithm(name=u'ЦДА', figure_cls=figure.Line)
+def DDA(draw_func, figure):
+    point1, point2 = figure.points
     x1, y1 = point1.x, point1.y
     x2, y2 = point2.x, point2.y
 
@@ -41,13 +34,15 @@ def DDA(draw_func, point1, point2):
     y = y1
 
     for i in xrange(int(length) + 1):
-        draw_func(plot.Point(int(round(x)), int(round(y))))
+        pixel = tools.Pixel(int(round(x)), int(round(y)))
+        draw_func(pixel)
         x += dx
         y += dy
 
 
-@algorithm(points=2, family=u'Отрезок', name=u'Алгоритм Брезенхема')
-def bresenham(draw_func, point1, point2):
+@algorithm(name=u'Алгоритм Брезенхема', figure_cls=figure.Line)
+def bresenham(draw_func, figure):
+    point1, point2 = figure.points
     x1, y1 = point1.x, point1.y
     x2, y2 = point2.x, point2.y
     dx = abs(x2 - x1)
@@ -57,7 +52,7 @@ def bresenham(draw_func, point1, point2):
 
     error = dx - dy
     while x1 != x2 or y1 != y2:
-        draw_func(plot.Point(x1, y1))
+        draw_func(tools.Pixel(x1, y1))
         error2 = error * 2
         if error2 > -dy:
             error -= dy
@@ -67,8 +62,9 @@ def bresenham(draw_func, point1, point2):
             y1 += signY
     draw_func(point2)
 
-@algorithm(points=2, family=u'Отрезок', name=u'Алгоритм Ву')
-def wu(draw_func, point1, point2):
+@algorithm(name=u'Алгоритм Ву', figure_cls=figure.Line)
+def wu(draw_func, figure):
+    point1, point2 = figure.points
     x1, y1 = point1.x, point1.y
     x2, y2 = point2.x, point2.y
     dx = abs(x2 - x1)
@@ -78,12 +74,12 @@ def wu(draw_func, point1, point2):
 
     if not dx:
         for y in xrange(y1, y2 + signY, signY):
-            draw_func(plot.Point(x1, y))
+            draw_func(tools.Pixel(x1, y))
         return
 
     if not dy:
         for x in xrange(x1, x2 + signX, signX):
-            draw_func(plot.Point(x, y1))
+            draw_func(tools.Pixel(x, y1))
         return
 
     gradientY = float(dy) / dx
@@ -93,11 +89,11 @@ def wu(draw_func, point1, point2):
         for x in xrange(x1, x2 + signX, signX):
             y = y1 + abs(x - x1) * gradientY * signY
             y_pos = tools.fpart(y)
-            draw_func(plot.Point(x, int(y)), (1 - y_pos))
-            draw_func(plot.Point(x, int(y) + 1), y_pos)
+            draw_func(tools.Pixel(x, int(y)), (1 - y_pos))
+            draw_func(tools.Pixel(x, int(y) + 1), y_pos)
     else:
         for y in xrange(y1, y2 + signY, signY):
             x = x1 + abs(y - y1) * gradientX * signX
             x_pos = tools.fpart(x)
-            draw_func(plot.Point(int(x), y), (1 - x_pos))
-            draw_func(plot.Point(int(x) + 1, y), x_pos)
+            draw_func(tools.Pixel(int(x), y), (1 - x_pos))
+            draw_func(tools.Pixel(int(x) + 1, y), x_pos)

@@ -2,86 +2,36 @@
 # -*- coding: utf-8 -*-
 
 from PySide.QtCore import *
-from PySide.QtGui import *
-
-import plot
-import plot_painter
-import algorithms
-import tools
 
 
-class PlotController(QObject):
-    queue_status_changed = Signal(bool)
-    debug_log = Signal(str)
+class SceneController(object):
+    default_palette = {
+        'base': Qt.black
+    }
 
-    def __init__(self, plot_model, algorithm, base_color):
-        super(PlotController, self).__init__()
+    def __init__(self, view, scene):
+        self._view = view
+        self._scene = scene
 
-        self._plot = plot_model
-        self.set_algorithm(algorithm)
-        self._base_color = base_color
         self._clicks = []
+        self._current_algorithm = None
 
-        self._debug_mode = False
-        self._plot_painter = plot_painter.PlotPainter(self._plot, base_color)
-        self._queued_plot_painter = plot_painter.QueuedPlotPainter(self._plot, base_color)
+    def get_algorithm(self):
+        return self._current_algorithm
 
-
-        self.next_state_wathcer = tools.StateWatcher(state=self._queued_plot_painter.has_next,
-                                                     on_changed=lambda state: self.queue_status_changed.emit(state))
+    def set_algorithm(self, algorithm):
+        self._current_algorithm = algorithm
 
     def click(self, pixel):
+        if not self._current_algorithm:
+            return
+
         self._clicks.append(pixel)
-        self._plot.add_decoration_point(pixel)
-        if len(self._clicks) == self._algorithm.points_number:
-            self._plot.clear_decoration()
+        if len(self._clicks) == self._current_algorithm.Figure.points_number():
             self._activate()
             self._clicks = []
 
-    @property
-    def algorithm(self):
-        return self._algorithm
-
-    def set_algorithm(self, algorithm):
-        assert hasattr(algorithm, 'points_number')
-        self._algorithm = algorithm
-
-    def set_debug_mode(self, is_enabled):
-        self.next_state_wathcer.grab()
-
-        if self._debug_mode:
-            self._queued_plot_painter.draw_all()
-        self._debug_mode = is_enabled
-
-        self.next_state_wathcer.check()
-
     def _activate(self):
-        self.next_state_wathcer.grab()
-        try:
-            self._algorithm(self._current_plot_painter().draw, *self._clicks)
-
-            if self._debug_mode:
-                points_str = '\n'.join(str(click) for click in self._clicks)
-                message = 'New figure (%s: %s) \nbase points:\n%s' % (self._algorithm.family,
-                                                                self._algorithm.name,
-                                                                points_str)
-                delimeter = '-' * 50
-                message = delimeter + '\n' + message + '\n' + delimeter
-                self.debug_log.emit(message)
-        except IndexError:
-            print 'out of range'
-        self.next_state_wathcer.check()
-
-    def _current_plot_painter(self):
-        return self._queued_plot_painter if self._debug_mode else self._plot_painter
-
-    def draw_next(self):
-        if self._debug_mode:
-            self.next_state_wathcer.grab()
-            point, alpha = self._queued_plot_painter.draw_next()
-            self.next_state_wathcer.check()
-
-            message = 'draw point: x=%i, y=%i' % (point.x, point.y)
-            if alpha is not None:
-                message += ', a=' + str(round(alpha, 2))
-            self.debug_log.emit(message)
+        figure = self._current_algorithm.Figure(self._clicks)
+        self._scene.append(figure, self._current_algorithm, self.default_palette)
+        self._view.update()

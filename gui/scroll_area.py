@@ -54,7 +54,7 @@ class NavigatableScrollArea(QScrollArea):
 
 class PlotZoomManager:
     BASE_ZOOM_FACTOR = 1.0
-    MIN_ZOOM_FACTOR = 0.1
+    MIN_ZOOM_FACTOR = 0.01
     MAX_ZOOM_FACTOR = 10.0
 
     def __init__(self, widget):
@@ -76,6 +76,7 @@ class PlotZoomManager:
             new_widget_size = self._base_widget_size * new_zoom_factor
             self._widget.resize(new_widget_size)
             self._zoom_factor = new_zoom_factor
+        print self._zoom_factor
 
     def reset(self, size=None):
         """

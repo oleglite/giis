@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import copy
-import inspect
+import collections
 
+Pixel = collections.namedtuple('Pixel', 'x y')
+Size = collections.namedtuple('Size', 'width height')
 
-def multicopy(object, number_copies):
-    return [copy.deepcopy(object) for i in xrange(number_copies)]
 
 def sign(number):
     if number > 0:
