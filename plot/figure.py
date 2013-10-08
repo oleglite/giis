@@ -32,3 +32,14 @@ class Figure(object):
 class Line(Figure):
     _POINTS_NUMBER = 2
     _FIGURE_NAME = u'Отрезок'
+
+class Circle(Figure):
+    _POINTS_NUMBER = 2
+    _FIGURE_NAME = u'Окружность'
+
+    def __init__(self, points):
+        super(Circle, self).__init__(points)
+
+        self.x0, self.y0 = self._points[0]
+        p = self._points[1]
+        self.R = ((p.x - self.x0) ** 2 + (p.y - self.y0) ** 2) ** 0.5

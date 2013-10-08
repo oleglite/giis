@@ -3,7 +3,9 @@
 from plot import figure
 
 import tools
+from tools import Pixel
 import collections
+import reflections
 
 by_name = collections.OrderedDict()
 
@@ -34,7 +36,7 @@ def DDA(draw_func, figure):
     y = y1
 
     for i in xrange(int(length) + 1):
-        pixel = tools.Pixel(int(round(x)), int(round(y)))
+        pixel = Pixel(int(round(x)), int(round(y)))
         draw_func(pixel)
         x += dx
         y += dy
@@ -52,7 +54,7 @@ def bresenham(draw_func, figure):
 
     error = dx - dy
     while x1 != x2 or y1 != y2:
-        draw_func(tools.Pixel(x1, y1))
+        draw_func(Pixel(x1, y1))
         error2 = error * 2
         if error2 > -dy:
             error -= dy
@@ -74,12 +76,12 @@ def wu(draw_func, figure):
 
     if not dx:
         for y in xrange(y1, y2 + signY, signY):
-            draw_func(tools.Pixel(x1, y))
+            draw_func(Pixel(x1, y))
         return
 
     if not dy:
         for x in xrange(x1, x2 + signX, signX):
-            draw_func(tools.Pixel(x, y1))
+            draw_func(Pixel(x, y1))
         return
 
     gradientY = float(dy) / dx
@@ -89,11 +91,52 @@ def wu(draw_func, figure):
         for x in xrange(x1, x2 + signX, signX):
             y = y1 + abs(x - x1) * gradientY * signY
             y_pos = tools.fpart(y)
-            draw_func(tools.Pixel(x, int(y)), (1 - y_pos))
-            draw_func(tools.Pixel(x, int(y) + 1), y_pos)
+            draw_func(Pixel(x, int(y)), (1 - y_pos))
+            draw_func(Pixel(x, int(y) + 1), y_pos)
     else:
         for y in xrange(y1, y2 + signY, signY):
             x = x1 + abs(y - y1) * gradientX * signX
             x_pos = tools.fpart(x)
-            draw_func(tools.Pixel(int(x), y), (1 - x_pos))
-            draw_func(tools.Pixel(int(x) + 1, y), x_pos)
+            draw_func(Pixel(int(x), y), (1 - x_pos))
+            draw_func(Pixel(int(x) + 1, y), x_pos)
+
+@algorithm(name=u'Алгоритм Брезенхема для окружности', figure_cls=figure.Circle)
+def bresenham_circle(draw_func, circle):
+    reflector = reflections.Reflector(draw_func)
+    h_line = figure.Line([circle.points[0], Pixel(circle.x0 + circle.R, circle.y0)])
+    reflector.append(reflections.LineReflection(h_line))
+    reflector.append(reflections.PointReflection(circle.points[0]))
+
+    x, y = 0, circle.R
+    di = 2 - 2 * circle.R
+
+    while y >= 0:
+        p = Pixel(x + circle.x0, int(y) + circle.y0)
+        reflector.draw_func(p)
+
+        dh = di + 2 * x + 1
+        dv = di + (-2 * y + 1)
+        dd = di + 2 * (x - y + 1)
+
+        if dd < 0:
+            delta = 2 * (dd + y) - 1
+            if delta <= 0:
+                x += 1
+                di += 2 * x + 1
+            else:
+                x += 1
+                y -= 1
+                di += 2 * (x - y + 1)
+        elif dd > 0:
+            delta = 2 * (dd - x) - 1
+            if delta <= 0:
+                x += 1
+                y -= 1
+                di += 2 * (x - y + 1)
+            else:
+                y -= 1
+                di += -2 * y + 1
+        else:
+            x += 1
+            y -= 1
+            di += 2 * (x - y + 1)

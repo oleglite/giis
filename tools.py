@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import collections
+import time
 
 Pixel = collections.namedtuple('Pixel', 'x y')
 Size = collections.namedtuple('Size', 'width height')
@@ -17,6 +18,15 @@ def sign(number):
 
 def fpart(num):
     return num - int(num)
+
+def log_exec_time(func):
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        func(*args, **kwargs)
+        time_diff = time.time() - start_time
+        print '*** %s: %f' %(func.__name__, time_diff)
+    return wrapper
+
 
 class StateWatcher:
     def __init__(self, state, on_changed):

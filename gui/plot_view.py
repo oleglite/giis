@@ -4,6 +4,7 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 from tools import Pixel
+import tools
 
 
 class SceneLook:
@@ -111,6 +112,7 @@ class SceneView(QWidget):
     def __draw_background(self):
         self._painter.fillRect(self.rect(), self._look.background_brush)
 
+    @tools.log_exec_time
     def __draw_scene(self):
         self._scene.set_context(self)
         if not self._is_one_pixel_size:
