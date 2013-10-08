@@ -4,12 +4,14 @@
 from PySide.QtCore import *
 
 
-class SceneController(object):
+class SceneController(QObject):
+    debug_log = Signal(str)
     default_palette = {
         'base': Qt.black
     }
 
     def __init__(self, view, scene):
+        super(SceneController, self).__init__()
         self._view = view
         self._scene = scene
 
@@ -35,3 +37,4 @@ class SceneController(object):
         figure = self._current_algorithm.Figure(self._clicks)
         self._scene.append(figure, self._current_algorithm, self.default_palette)
         self._view.update()
+        self.debug_log.emit('%s' % (figure))

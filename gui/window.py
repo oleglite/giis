@@ -77,24 +77,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return draw_menu
 
     def _connect_actions(self):
+        self.actionNext.setEnabled(False)
+
         self.actionClean.triggered.connect(self._scene_widget.clear_scene)
-        #self.actionDebug.toggled.connect(self._scene_widget.scene.set_debug_enabled)
-        # self.actionNext.triggered.connect(self._scene_widget.scene.debug_next)
-        # self.actionNext.triggered.connect(self._scene_widget.repaint)
+        self.actionDebug.toggled.connect(self._scene_widget.scene.set_debug)
+        self.actionNext.triggered.connect(self._scene_widget.scene.debug_next)
+        self.actionNext.triggered.connect(self._scene_widget.repaint)
         self.actionEnableGrid.toggled.connect(self._scene_widget.set_grid_enabled)
 
-        # self.actionNext.setEnabled(False)
-        # self._scene_widget.controller.queue_status_changed.connect(self.actionNext.setEnabled)
-        #
-        # self.debugTextBrowser.setVisible(self.actionDebug.isChecked())
-        # self.actionDebug.toggled.connect(self.debugTextBrowser.setVisible)
-        # self.actionDebug.triggered.connect(self.debugTextBrowser.clear)
-        # self._scene_widget.controller.debug_log.connect(self._add_debug_message)
-    #
-    # def _change_debug_mode_status(self, checked):
-    #     self._scene_widget.scene.set_debug_enabled(checked)
-    #
-    # def _add_debug_message(self, message):
-    #     prev_text = self.debugTextBrowser.toPlainText()
-    #     self.debugTextBrowser.setText('%s%s\n' % (prev_text, message))
-    #     self.debugTextBrowser.moveCursor(QTextCursor.End)
+        self.actionDebug.toggled.connect(self.actionNext.setEnabled)
+
+        self.debugTextBrowser.setVisible(self.actionDebug.isChecked())
+        self.actionDebug.toggled.connect(self.debugTextBrowser.setVisible)
+        self.actionDebug.triggered.connect(self.debugTextBrowser.clear)
+        self._scene_widget.get_controller().debug_log.connect(self._add_debug_message)
+
+    def _add_debug_message(self, message):
+        prev_text = self.debugTextBrowser.toPlainText()
+        self.debugTextBrowser.setText('%s%s\n' % (prev_text, message))
+        self.debugTextBrowser.moveCursor(QTextCursor.End)

@@ -14,6 +14,9 @@ class Figure(object):
 
         self._points = points
 
+    def __str__(self):
+        return '%s%s' % (self._FIGURE_NAME, str(self._points))
+
     @classmethod
     def points_number(cls):
         return cls._POINTS_NUMBER

@@ -76,7 +76,6 @@ class PlotZoomManager:
             new_widget_size = self._base_widget_size * new_zoom_factor
             self._widget.resize(new_widget_size)
             self._zoom_factor = new_zoom_factor
-        print self._zoom_factor
 
     def reset(self, size=None):
         """
