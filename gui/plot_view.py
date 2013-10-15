@@ -48,6 +48,10 @@ class SceneView(QWidget):
     def scene(self):
         return self._scene
 
+    @property
+    def scene_size(self):
+        return self._scene_size
+
     def get_controller(self):
         return self._controller
 

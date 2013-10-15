@@ -140,3 +140,47 @@ def bresenham_circle(draw_func, circle):
             x += 1
             y -= 1
             di += 2 * (x - y + 1)
+
+@algorithm(name=u'Парабола', figure_cls=figure.Parabola)
+def bres_like_parabola(draw_func, parabola):
+    x, y0 = parabola.points[0]
+    y = 0
+
+    p = abs(parabola.params['p'])
+    x_max = parabola.params['scene_size'].width
+
+    di = 0
+    increment = tools.sign(parabola.params['p'])
+
+    draw_func(parabola.points[0])
+
+    while 0 < x < x_max:
+        dh = di + 2 * p
+        dv = di - 1 - 2 * y
+        dd = di + 2 * (p - y) - 1
+
+        if dd < 0:
+            delta = abs(dh) - abs(dd)
+            if delta <= 0:
+                x += increment
+                di += 2 * p
+            else:
+                x += increment
+                y += 1
+                di += 2 * (p - y) - 1
+        elif dd > 0:
+            delta = abs(dd) - abs(dv)
+            if delta <= 0:
+                x += increment
+                y += 1
+                di += 2 * (p - y) - 1
+            else:
+                y += 1
+                di += -1 - 2 * y
+        else:
+            x += increment
+            y += 1
+            di += 2 * (p - y) - 1
+
+        draw_func(Pixel(x, y0 + y))
+        draw_func(Pixel(x, y0 - y))

@@ -34,7 +34,10 @@ class SceneController(QObject):
             self._clicks = []
 
     def _activate(self):
-        figure = self._current_algorithm.Figure(self._clicks)
+        params = {
+            'scene_size': self._view.scene_size,
+        }
+        figure = self._current_algorithm.Figure(self._clicks, params)
         self._scene.append(figure, self._current_algorithm, self.default_palette)
         self._view.update()
         self.debug_log.emit('%s' % (figure))
