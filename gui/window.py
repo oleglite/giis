@@ -10,6 +10,7 @@ import scroll_area
 import plot_view
 from tools import Size
 
+import gui.dialogs, plot.figure
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     INIT_PIXEL_SIZE = 16
@@ -52,7 +53,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def _update_status_bar(self):
         algorithm = self._scene_widget.get_controller().get_algorithm()
         if algorithm:
-            text = '%s: %s' % (algorithm.Figure.name(), algorithm.name)
+            text = '%s: %s' % (algorithm.Figure.NAME, algorithm.NAME)
             self.algorithmLabel.setText(text)
 
     def _init_menus(self):
@@ -65,12 +66,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         for name, algorithm in algorithms.by_name.iteritems():
             if algorithm.Figure not in figure_menus:
-                figure_menu = QMenu(algorithm.Figure.name())
+                figure_menu = QMenu(algorithm.Figure.NAME)
                 figure_menus[algorithm.Figure] = figure_menu
                 draw_menu.addMenu(figure_menu)
 
             figure_menu = figure_menus[algorithm.Figure]
-            alg_action = QAction(algorithm.name, figure_menu)
+            alg_action = QAction(algorithm.NAME, figure_menu)
             figure_menu.addAction(alg_action)
 
         draw_menu.triggered.connect(self._change_algorithm)

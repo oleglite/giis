@@ -22,9 +22,10 @@ def fpart(num):
 def log_exec_time(func):
     def wrapper(*args, **kwargs):
         start_time = time.time()
-        func(*args, **kwargs)
+        result = func(*args, **kwargs)
         time_diff = time.time() - start_time
         print '*** %s: %f' %(func.__name__, time_diff)
+        return result
     return wrapper
 
 
@@ -45,3 +46,16 @@ class StateWatcher:
         if current_state != self._grabbed_state:
             self._on_changed(current_state)
         self._grabbed_state = None
+
+def filtered_items(d, keys):
+    """
+    >>> dict(filtered_items({1: 10, 2: 20, 3: 30}, [2, 3]))
+    {2: 20, 3: 30}
+    >>> dict(filtered_items({1: 10, 2: 20, 3: 30}, []))
+    {}
+    >>> dict(filtered_items({1: 10, 2: 20, 3: 30}, [1, 2, 3]))
+    {1: 10, 2: 20, 3: 30}
+    >>> dict(filtered_items({1: 10, 2: 20, 3: 30}, [1, 2, 3, 4]))
+    {1: 10, 2: 20, 3: 30}
+    """
+    return (item for item in d.iteritems() if item[0] in keys)

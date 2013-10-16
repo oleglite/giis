@@ -1,20 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import tools
+
 class FigureException(Exception): pass
 
 
 class Figure(object):
-    _POINTS_NUMBER = 1
-    _FIGURE_NAME = u'Figure'
-    _REQUIRED_PARAMS = []
+    POINTS_NUMBER = 1
+    NAME = u'Figure'
+    REQUIRED_PARAMS = []
 
     def __init__(self, points, params={}):
-        params['p'] = -2
-        if len(points) != self._POINTS_NUMBER:
-            raise FigureException('Expected %i points' % self._POINTS_NUMBER)
+        if len(points) != self.POINTS_NUMBER:
+            raise FigureException('Expected %i points' % self.POINTS_NUMBER)
 
-        for param in self._REQUIRED_PARAMS:
+        for param in self.REQUIRED_PARAMS:
             if param not in params:
                 raise FigureException('Required %r param' % param)
 
@@ -22,15 +23,11 @@ class Figure(object):
         self._params = params
 
     def __str__(self):
-        return '%s%s' % (self._FIGURE_NAME, str(self._points))
-
-    @classmethod
-    def points_number(cls):
-        return cls._POINTS_NUMBER
-
-    @classmethod
-    def name(cls):
-        return cls._FIGURE_NAME
+        text = '%s%s' % (self.NAME, str(self._points))
+        if self._params:
+            required_params = dict(tools.filtered_items(self._params, self.REQUIRED_PARAMS))
+            text += unicode(required_params)
+        return text
 
     @property
     def points(self):
@@ -40,13 +37,15 @@ class Figure(object):
     def params(self):
         return self._params
 
+
 class Line(Figure):
-    _POINTS_NUMBER = 2
-    _FIGURE_NAME = u'Отрезок'
+    POINTS_NUMBER = 2
+    NAME = u'Отрезок'
+
 
 class Circle(Figure):
-    _POINTS_NUMBER = 2
-    _FIGURE_NAME = u'Окружность'
+    POINTS_NUMBER = 2
+    NAME = u'Окружность'
 
     def __init__(self, points, params={}):
         super(Circle, self).__init__(points, params)
@@ -55,7 +54,8 @@ class Circle(Figure):
         p = self._points[1]
         self.R = ((p.x - self.x0) ** 2 + (p.y - self.y0) ** 2) ** 0.5
 
+
 class Parabola(Figure):
-    _POINTS_NUMBER = 1
-    _REQUIRED_PARAMS = ['p']
-    _FIGURE_NAME = u'Парабола'
+    POINTS_NUMBER = 1
+    REQUIRED_PARAMS = ['p']
+    NAME = u'Парабола'

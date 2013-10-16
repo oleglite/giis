@@ -12,7 +12,7 @@ by_name = collections.OrderedDict()
 
 def algorithm(name, figure_cls):
     def wrap(func):
-        func.name = name
+        func.NAME = name
         func.Figure = figure_cls
         by_name[name] = func
         return func

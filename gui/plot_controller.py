@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from PySide.QtCore import *
-
+import gui.dialogs
 
 class SceneController(QObject):
     debug_log = Signal(str)
@@ -29,14 +29,17 @@ class SceneController(QObject):
             return
 
         self._clicks.append(pixel)
-        if len(self._clicks) == self._current_algorithm.Figure.points_number():
+        if len(self._clicks) == self._current_algorithm.Figure.POINTS_NUMBER:
             self._activate()
             self._clicks = []
 
     def _activate(self):
-        params = {
-            'scene_size': self._view.scene_size,
-        }
+        params = gui.dialogs.FigureDialog.request_params(self._current_algorithm.Figure)
+        if params is None:
+            return
+
+        params['scene_size'] = self._view.scene_size
+
         figure = self._current_algorithm.Figure(self._clicks, params)
         self._scene.append(figure, self._current_algorithm, self.default_palette)
         self._view.update()
