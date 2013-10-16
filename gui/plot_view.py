@@ -75,14 +75,15 @@ class SceneView(QWidget):
         self._painter.end()
 
     def draw_pixel(self, pixel, color):
-        rect = self._pixel_rect(pixel)
+        if pixel.x < self._scene_size.width and pixel.y < self._scene_size.height:
+            rect = self._pixel_rect(pixel)
 
-        if self._is_one_pixel_size:
-            self._painter.setPen(QPen(color))
-            self._painter.drawPoint(QPointF(rect.x(), rect.y()))
-        else:
-            self._painter.setBrush(QBrush(color))
-            self._painter.drawRect(rect)
+            if self._is_one_pixel_size:
+                self._painter.setPen(QPen(color))
+                self._painter.drawPoint(QPointF(rect.x(), rect.y()))
+            else:
+                self._painter.setBrush(QBrush(color))
+                self._painter.drawRect(rect)
 
     def resizeEvent(self, event):
         self._pixel_size = float(self.rect().width()) / self._scene_size.width
