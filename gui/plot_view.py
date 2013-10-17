@@ -10,15 +10,24 @@ import tools
 class SceneLook:
     background_brush = QBrush(Qt.white)
     grid_pen = QPen(Qt.gray)
+    special_pen = QPen(Qt.gray)
+    special_brush = QBrush(Qt.green)
+
+    default_palette = {
+        'base': Qt.black,
+        'click': Qt.red,
+    }
+
+    special_size = 4
 
 
 def scene_widget(scene_size):
     from plot.scene import Scene
-    from plot_controller import SceneController
+    from plot_controller import SpecialController
 
     scene = Scene()
     view = SceneView(scene, scene_size)
-    controller = SceneController(view, scene)
+    controller = SpecialController(view, scene)
 
     view.set_controller(controller)
 
@@ -28,21 +37,26 @@ def scene_widget(scene_size):
 class SceneView(QWidget):
     MIN_PIXEL_SIZE_GRID_ENABLED = 3
 
-    def __init__(self, scene, scene_size, look=SceneLook(), grid_enabled=True, parent=None):
+    def __init__(self, scene, scene_size, look=SceneLook(), grid_enabled=True, special_enabled=True, parent=None):
         super(SceneView, self).__init__(parent)
 
         self._scene = scene
         self._scene_size = scene_size
         self._look = look
         self._grid_enabled = grid_enabled
+        self._special_enabled = special_enabled
 
         self._painter = QPainter()
 
         self._pixel_size = None
         self._is_one_pixel_size = None
         self._controller = None
+        self._specials = None
+
+        self._leftButtonPressed = False
 
         self.setMinimumSize(self._scene_size.width, self._scene_size.height)
+        self.setFocusPolicy(Qt.StrongFocus)
 
     @property
     def scene(self):
@@ -51,6 +65,10 @@ class SceneView(QWidget):
     @property
     def scene_size(self):
         return self._scene_size
+
+    @property
+    def look(self):
+        return self._look
 
     def get_controller(self):
         return self._controller
@@ -64,13 +82,17 @@ class SceneView(QWidget):
 
     def paintEvent(self, event):
         super(SceneView, self).paintEvent(event)
+        print  'painting'
 
         self._painter.begin(self)
 
         self.__draw_background()
         self.__draw_scene()
+        self.__draw_clicks()
         if self.grid_enabled():
             self.__draw_grid()
+        if self._special_enabled:
+            self.__draw_specials()
 
         self._painter.end()
 
@@ -91,9 +113,30 @@ class SceneView(QWidget):
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton and self._controller:
-            pixel = self._point_pixel(event.posF())
-            self._controller.click(pixel)
+            self._leftButtonPressed = True
+            self._controller.press(event.posF(), self._specials)
+            # pixel = self.point_pixel(event.posF())
+            # self._controller.click(pixel)
+            self.repaint()
         return super(SceneView, self).mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        if self._leftButtonPressed:
+            self._controller.release()
+            self._leftButtonPressed = False
+            self.repaint()
+        super(SceneView, self).mouseReleaseEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if self._leftButtonPressed:
+            self._controller.move(event.posF())
+            self.repaint()
+        super(SceneView, self).mouseMoveEvent(event)
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape and self._controller:
+            self._controller.reset_clicks()
+            self.repaint()
 
     def grid_enabled(self):
         if self._pixel_size < self.MIN_PIXEL_SIZE_GRID_ENABLED:
@@ -104,14 +147,25 @@ class SceneView(QWidget):
         self._grid_enabled = is_enabled
         self.repaint()
 
+    def special_enabled(self):
+        return self._special_enabled
+
+    def set_special_enabled(self, is_enabled):
+        self._special_enabled = is_enabled
+        self.repaint()
+
     def _pixel_rect(self, pixel):
         left = pixel.x * self._pixel_size
         top = pixel.y * self._pixel_size
         return QRectF(left, top, self._pixel_size, self._pixel_size)
 
-    def _point_pixel(self, point):
+    def point_pixel(self, point):
         pixel_x = point.x() / self._pixel_size
         pixel_y = point.y() / self._pixel_size
+
+        pixel_x = tools.place_between(pixel_x, 0, self._scene_size.width - 1)
+        pixel_y = tools.place_between(pixel_y, 0, self._scene_size.height - 1)
+
         return Pixel(int(pixel_x), int(pixel_y))
 
     def __draw_background(self):
@@ -143,3 +197,20 @@ class SceneView(QWidget):
             lines.append(QLineF(point1, point2))
 
         self._painter.drawLines(lines)
+
+    def __draw_specials(self):
+        self._painter.setPen(self._look.special_pen)
+        self._painter.setBrush(self._look.special_brush)
+        self._specials = []
+
+        for figure in self._scene:
+            for i, pixel in enumerate(figure.points):
+                rect = self._pixel_rect(pixel)
+                center = QPointF(rect.x() + rect.width() / 2., rect.y() + rect.height() / 2.)
+                radius = self._look.special_size
+                self._painter.drawEllipse(center, radius, radius)
+                self._specials.append(tools.SpecialTuple(center, figure, i))
+
+    def __draw_clicks(self):
+        for click in self._controller.clicks:
+            self.draw_pixel(click, self._look.default_palette['click'])

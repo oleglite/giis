@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="icons">
+    <file>Green-Ball-Icon.png</file>
     <file>Grid.png</file>
     <file>Actions-new-window-icon.png</file>
     <file>Actions-properties-icon.png</file>

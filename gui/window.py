@@ -85,6 +85,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionNext.triggered.connect(self._scene_widget.scene.debug_next)
         self.actionNext.triggered.connect(self._scene_widget.repaint)
         self.actionEnableGrid.toggled.connect(self._scene_widget.set_grid_enabled)
+        self.actionEnableSpecial.toggled.connect(self._scene_widget.set_special_enabled)
 
         self.actionDebug.toggled.connect(self.actionNext.setEnabled)
 

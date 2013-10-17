@@ -33,6 +33,10 @@ class Figure(object):
     def points(self):
         return self._points
 
+    def set_point(self, point, number):
+        assert 0 <= number < self.POINTS_NUMBER
+        self._points[number] = point
+
     @property
     def params(self):
         return self._params
@@ -49,7 +53,27 @@ class Circle(Figure):
 
     def __init__(self, points, params={}):
         super(Circle, self).__init__(points, params)
+        self.__update()
 
+    # @property
+    # def R(self):
+    #     x, y = self._points[1]
+    #     return ((x - self.x0) ** 2 + (y - self.y0) ** 2) ** 0.5
+
+    def set_point(self, point, number):
+        assert 0 <= number < self.POINTS_NUMBER
+
+        if number == 0:
+            dx = point.x - self._points[0].x
+            dy = point.y - self._points[0].y
+
+            Figure.set_point(self, point, 0)
+            Figure.set_point(self, tools.Pixel(self._points[1].x + dx, self._points[1].y + dy), 1)
+        else:
+            super(Circle, self).set_point(point, number)
+        self.__update()
+
+    def __update(self):
         self.x0, self.y0 = self._points[0]
         p = self._points[1]
         self.R = ((p.x - self.x0) ** 2 + (p.y - self.y0) ** 2) ** 0.5

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Wed Oct 16 13:02:59 2013
+# Created: Wed Oct 16 15:20:25 2013
 #      by: pyside-uic 0.2.14 running on PySide 1.1.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -70,7 +70,15 @@ class Ui_MainWindow(object):
         icon3.addPixmap(QtGui.QPixmap(":/icons/Grid.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionEnableGrid.setIcon(icon3)
         self.actionEnableGrid.setObjectName("actionEnableGrid")
+        self.actionEnableSpecial = QtGui.QAction(MainWindow)
+        self.actionEnableSpecial.setCheckable(True)
+        self.actionEnableSpecial.setChecked(True)
+        icon4 = QtGui.QIcon()
+        icon4.addPixmap(QtGui.QPixmap(":/icons/Green-Ball-Icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionEnableSpecial.setIcon(icon4)
+        self.actionEnableSpecial.setObjectName("actionEnableSpecial")
         self.toolBar.addAction(self.actionClean)
+        self.toolBar.addAction(self.actionEnableSpecial)
         self.toolBar.addAction(self.actionEnableGrid)
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.actionDebug)
@@ -89,5 +97,6 @@ class Ui_MainWindow(object):
         self.actionNext.setText(QtGui.QApplication.translate("MainWindow", "next", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNext.setToolTip(QtGui.QApplication.translate("MainWindow", "Далее", None, QtGui.QApplication.UnicodeUTF8))
         self.actionEnableGrid.setText(QtGui.QApplication.translate("MainWindow", "enable grid", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionEnableSpecial.setText(QtGui.QApplication.translate("MainWindow", "enableSpecial", None, QtGui.QApplication.UnicodeUTF8))
 
 import resources_rc

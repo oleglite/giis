@@ -6,6 +6,7 @@ import time
 
 Pixel = collections.namedtuple('Pixel', 'x y')
 Size = collections.namedtuple('Size', 'width height')
+SpecialTuple = collections.namedtuple('SpecialTuple', 'center figure point_number')
 
 
 def sign(number):
@@ -59,3 +60,19 @@ def filtered_items(d, keys):
     {1: 10, 2: 20, 3: 30}
     """
     return (item for item in d.iteritems() if item[0] in keys)
+
+def place_between(number, minimum, maximum):
+    """
+    >>> place_between(3, 1, 4)
+    3
+    >>> place_between(0, 1, 4)
+    1
+    >>> place_between(7, 1, 4)
+    4
+    """
+    if number < minimum:
+        return minimum
+    elif number > maximum:
+        return maximum
+    else:
+        return number

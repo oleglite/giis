@@ -49,6 +49,9 @@ class Scene:
         drawer.begin(scene_item)
         return drawer.draw_func
 
+    def __iter__(self):
+        return (scene_item.figure for scene_item in self._items)
+
 
 class Drawer(object):
     def __init__(self):

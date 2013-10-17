@@ -72,6 +72,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionClean"/>
+   <addaction name="actionEnableSpecial"/>
    <addaction name="actionEnableGrid"/>
    <addaction name="separator"/>
    <addaction name="actionDebug"/>
@@ -135,6 +136,21 @@
    </property>
    <property name="text">
     <string>enable grid</string>
+   </property>
+  </action>
+  <action name="actionEnableSpecial">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/Green-Ball-Icon.png</normaloff>:/icons/Green-Ball-Icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>enableSpecial</string>
    </property>
   </action>
  </widget>

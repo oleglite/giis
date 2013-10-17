@@ -108,38 +108,42 @@ def bresenham_circle(draw_func, circle):
     reflector.append(reflections.PointReflection(circle.points[0]))
 
     x, y = 0, circle.R
-    di = 2 - 2 * circle.R
+    di = 0#2 - 2 * circle.R
 
     while y >= 0:
         p = Pixel(x + circle.x0, int(y) + circle.y0)
         reflector.draw_func(p)
 
-        dh = di + 2 * x + 1
-        dv = di + (-2 * y + 1)
-        dd = di + 2 * (x - y + 1)
+        h_incr = 2 * x + 1
+        v_incr = -2 * y + 1
+        d_incr = 2 * (x - y + 1)
+
+        dh = di + h_incr
+        dv = di + v_incr
+        dd = di + d_incr
 
         if dd < 0:
             delta = 2 * (dd + y) - 1
             if delta <= 0:
                 x += 1
-                di += 2 * x + 1
+                di += h_incr
             else:
                 x += 1
                 y -= 1
-                di += 2 * (x - y + 1)
+                di += d_incr
         elif dd > 0:
             delta = 2 * (dd - x) - 1
             if delta <= 0:
                 x += 1
                 y -= 1
-                di += 2 * (x - y + 1)
+                di += d_incr
             else:
                 y -= 1
-                di += -2 * y + 1
+                di += v_incr
         else:
             x += 1
             y -= 1
-            di += 2 * (x - y + 1)
+            di += d_incr
 
 @algorithm(name=u'Парабола', figure_cls=figure.Parabola)
 def bres_like_parabola(draw_func, parabola):
