@@ -76,3 +76,12 @@ def place_between(number, minimum, maximum):
         return maximum
     else:
         return number
+
+def max_diff(values):
+    """
+    >>> max_diff([1, -1, 5])
+    6
+    >>> max_diff([1, 2, 5])
+    4
+    """
+    return abs(max(values) - min(values))

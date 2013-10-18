@@ -196,9 +196,14 @@ def ermit_curve(draw_func, curve):
     r1x, r1y = curve.points[2]
     r4x, r4y = curve.points[3]
 
+    r1x -= p1x
+    r1y -= p1y
+    r4x -= p1x
+    r4y -= p1y
+
     t = 0.0
-    steps_number = max(abs(p1x - p4x), abs(p1y - p4y), abs(r1x - r4x), abs(r1y - r4y))
-    t_incr = 1.0 / ((steps_number + 1) * 1.5)
+    steps_number = tools.max_diff([p1x, p4x, r1x, r4x]) + tools.max_diff([p1y, p4y, r1y, r4y])
+    t_incr = 1.0 / (steps_number + 1)
 
     while t <= 1.0:
         t3 = t ** 3
@@ -211,6 +216,30 @@ def ermit_curve(draw_func, curve):
 
         x = p1x * p1_mul + p4x * p4_mul + r1x * r1_mul + r4x * r4_mul
         y = p1y * p1_mul + p4y * p4_mul + r1y * r1_mul + r4y * r4_mul
+
+        draw_func(tools.Pixel(round(x), round(y)))
+
+        t += t_incr
+
+@algorithm(u'Кривая Безье', figure.Curve)
+def bezier_curve(draw_func, curve):
+    p1x, p1y = curve.points[0]
+    p4x, p4y = curve.points[1]
+    p2x, p2y = curve.points[2]
+    p3x, p3y = curve.points[3]
+
+    t = 0.0
+    steps_number = tools.max_diff([p1x, p2x, p3x, p4x]) + tools.max_diff([p1y, p2x, p3x, p4y])
+    t_incr = 1.0 / ((steps_number + 1) * 2)
+
+    while t <= 1.0:
+        p1_mul = (1 - t) ** 3
+        p2_mul = 3 * t * ((t - 1) ** 2)
+        p3_mul = 3 * (t ** 2) * (1 - t)
+        p4_mul = t ** 3
+
+        x = p1x * p1_mul + p2x * p2_mul + p3x * p3_mul + p4x * p4_mul
+        y = p1y * p1_mul + p2y * p2_mul + p3y * p3_mul + p4y * p4_mul
 
         draw_func(tools.Pixel(round(x), round(y)))
 
