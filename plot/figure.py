@@ -55,11 +55,6 @@ class Circle(Figure):
         super(Circle, self).__init__(points, params)
         self.__update()
 
-    # @property
-    # def R(self):
-    #     x, y = self._points[1]
-    #     return ((x - self.x0) ** 2 + (y - self.y0) ** 2) ** 0.5
-
     def set_point(self, point, number):
         assert 0 <= number < self.POINTS_NUMBER
 

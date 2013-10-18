@@ -82,7 +82,6 @@ class SceneView(QWidget):
 
     def paintEvent(self, event):
         super(SceneView, self).paintEvent(event)
-        print  'painting'
 
         self._painter.begin(self)
 
@@ -97,8 +96,10 @@ class SceneView(QWidget):
         self._painter.end()
 
     def draw_pixel(self, pixel, color):
-        if pixel.x < self._scene_size.width and pixel.y < self._scene_size.height:
-            rect = self._pixel_rect(pixel)
+        pixel_x = tools.rounded_int(pixel.x)
+        pixel_y = tools.rounded_int(pixel.y)
+        if pixel_x < self._scene_size.width and pixel_y < self._scene_size.height:
+            rect = self._pixel_rect(tools.Pixel(pixel_x, pixel_y))
 
             if self._is_one_pixel_size:
                 self._painter.setPen(QPen(color))
@@ -184,16 +185,22 @@ class SceneView(QWidget):
 
         lines = []
 
+        rect = self.rect()
+        rect_top = rect.top()
+        rect_bottom = rect.bottom()
+        rect_left = rect.left()
+        rect_right = rect.right()
+
         for i in xrange(0, self._scene_size.width + 1):
             line_x = i * self._pixel_size
-            point1 = QPointF(line_x, self.rect().top())
-            point2 = QPointF(line_x, self.rect().bottom())
+            point1 = QPointF(line_x, rect_top)
+            point2 = QPointF(line_x, rect_bottom)
             lines.append(QLineF(point1, point2))
 
         for i in xrange(0, self._scene_size.height + 1):
             line_y = i * self._pixel_size
-            point1 = QPointF(self.rect().left(), line_y)
-            point2 = QPointF(self.rect().right(), line_y)
+            point1 = QPointF(rect_left, line_y)
+            point2 = QPointF(rect_right, line_y)
             lines.append(QLineF(point1, point2))
 
         self._painter.drawLines(lines)

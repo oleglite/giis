@@ -85,3 +85,8 @@ def max_diff(values):
     4
     """
     return abs(max(values) - min(values))
+
+def rounded_int(x):
+    "simple rounding, twice faster than standart round() in simple cases"
+    x_int = int(x)
+    return x_int if x - x_int < 0.5 else x_int + 1

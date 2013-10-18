@@ -36,7 +36,7 @@ def DDA(draw_func, figure):
     y = y1
 
     for i in xrange(int(length) + 1):
-        pixel = Pixel(int(round(x)), int(round(y)))
+        pixel = Pixel(x, y)
         draw_func(pixel)
         x += dx
         y += dy
@@ -217,7 +217,7 @@ def ermit_curve(draw_func, curve):
         x = p1x * p1_mul + p4x * p4_mul + r1x * r1_mul + r4x * r4_mul
         y = p1y * p1_mul + p4y * p4_mul + r1y * r1_mul + r4y * r4_mul
 
-        draw_func(tools.Pixel(round(x), round(y)))
+        draw_func(tools.Pixel(x, y))
 
         t += t_incr
 
@@ -241,6 +241,6 @@ def bezier_curve(draw_func, curve):
         x = p1x * p1_mul + p2x * p2_mul + p3x * p3_mul + p4x * p4_mul
         y = p1y * p1_mul + p2y * p2_mul + p3y * p3_mul + p4y * p4_mul
 
-        draw_func(tools.Pixel(round(x), round(y)))
+        draw_func(tools.Pixel(x, y))
 
         t += t_incr
