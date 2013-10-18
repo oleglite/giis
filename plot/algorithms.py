@@ -188,3 +188,30 @@ def bres_like_parabola(draw_func, parabola):
 
         draw_func(Pixel(x, y0 + y))
         draw_func(Pixel(x, y0 - y))
+
+@algorithm(u'Метод Эрмита', figure.Curve)
+def ermit_curve(draw_func, curve):
+    p1x, p1y = curve.points[0]
+    p4x, p4y = curve.points[1]
+    r1x, r1y = curve.points[2]
+    r4x, r4y = curve.points[3]
+
+    t = 0.0
+    steps_number = max(abs(p1x - p4x), abs(p1y - p4y), abs(r1x - r4x), abs(r1y - r4y))
+    t_incr = 1.0 / ((steps_number + 1) * 1.5)
+
+    while t <= 1.0:
+        t3 = t ** 3
+        t2 = t ** 2
+
+        p1_mul = 2 * t3 - 3 * t2 + 1
+        p4_mul = -2 * t3 + 3 * t2
+        r1_mul = t3 - 2 * t2 + t
+        r4_mul = t3 - t2
+
+        x = p1x * p1_mul + p4x * p4_mul + r1x * r1_mul + r4x * r4_mul
+        y = p1y * p1_mul + p4y * p4_mul + r1y * r1_mul + r4y * r4_mul
+
+        draw_func(tools.Pixel(round(x), round(y)))
+
+        t += t_incr

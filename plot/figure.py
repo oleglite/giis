@@ -83,3 +83,8 @@ class Parabola(Figure):
     POINTS_NUMBER = 1
     REQUIRED_PARAMS = ['p']
     NAME = u'Парабола'
+
+
+class Curve(Figure):
+    POINTS_NUMBER = 4
+    NAME = u'Кривая'
