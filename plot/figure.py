@@ -34,12 +34,19 @@ class Figure(object):
         return self._points
 
     def set_point(self, point, number):
-        assert 0 <= number < self.POINTS_NUMBER
         self._points[number] = point
 
     @property
     def params(self):
         return self._params
+
+
+class ExtendibleFigure(Figure):
+    # def __init__(self, points, params={}):
+    #     super(ExtendibleFigure, self).__init__(points, params)
+
+    def add_point(self, point):
+        self._points.append(point)
 
 
 class Line(Figure):
@@ -83,3 +90,7 @@ class Parabola(Figure):
 class Curve(Figure):
     POINTS_NUMBER = 4
     NAME = u'Кривая'
+
+
+class ExtendibleCurve(Curve, ExtendibleFigure):
+    NAME = u'Продолжаемая кривая'

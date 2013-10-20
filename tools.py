@@ -90,3 +90,14 @@ def rounded_int(x):
     "simple rounding, twice faster than standart round() in simple cases"
     x_int = int(x)
     return x_int if x - x_int < 0.5 else x_int + 1
+
+def ntuples(lst, n):
+    """
+    >>> ntuples([1, 2, 3, 4, 5], 1)
+    [(1,), (2,), (3,), (4,), (5,)]
+    >>> ntuples([1, 2, 3, 4, 5], 2)
+    [(1, 2), (2, 3), (3, 4), (4, 5)]
+    >>> ntuples([1, 2, 3, 4, 5], 3)
+    [(1, 2, 3), (2, 3, 4), (3, 4, 5)]
+    """
+    return zip(*(lst[i:] + lst[:i] for i in xrange(n)))[:len(lst) - n + 1]

@@ -3,6 +3,7 @@
 
 from PySide.QtCore import *
 import gui.dialogs
+import plot.figure
 
 class BaseController(QObject):
     debug_log = Signal(str)
@@ -15,6 +16,7 @@ class SceneController(BaseController):
 
         self._clicks = []
         self._current_algorithm = None
+        self._current_extendible_figure = None
 
     def get_algorithm(self):
         return self._current_algorithm
@@ -30,15 +32,20 @@ class SceneController(BaseController):
         if not self._current_algorithm:
             return
 
+        if self._current_extendible_figure:
+            self._current_extendible_figure.add_point(pixel)
+            return
+
         self._clicks.append(pixel)
         if len(self._clicks) == self._current_algorithm.Figure.POINTS_NUMBER:
-            self._activate()
-            self.reset_clicks()
+            self._create_figure()
+            self._clicks = []
 
-    def reset_clicks(self):
+    def reset(self):
         self._clicks = []
+        self._current_extendible_figure = None
 
-    def _activate(self):
+    def _create_figure(self):
         params = gui.dialogs.FigureDialog.request_params(self._current_algorithm.Figure)
         if params is None:
             return
@@ -47,6 +54,9 @@ class SceneController(BaseController):
 
         figure = self._current_algorithm.Figure(self._clicks, params)
         self._scene.append(figure, self._current_algorithm, self._view.look.default_palette)
+        if isinstance(figure, plot.figure.ExtendibleFigure):
+            self._current_extendible_figure = figure
+
         self._view.update()
         self.debug_log.emit('%s' % (figure))
 

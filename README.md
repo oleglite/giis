@@ -10,3 +10,4 @@ Done:
  - Algorithm for drawing parabola
  - Hermite interpolation for drawing curve
  - Bezier curve
+ - B-spline

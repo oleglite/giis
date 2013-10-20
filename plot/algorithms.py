@@ -189,6 +189,9 @@ def bres_like_parabola(draw_func, parabola):
         draw_func(Pixel(x, y0 + y))
         draw_func(Pixel(x, y0 - y))
 
+def count_steps(points):
+    return tools.max_diff([point.x for point in points]) + tools.max_diff([point.y for point in points])
+
 @algorithm(u'Метод Эрмита', figure.Curve)
 def ermit_curve(draw_func, curve):
     p1x, p1y = curve.points[0]
@@ -202,7 +205,7 @@ def ermit_curve(draw_func, curve):
     r4y -= p1y
 
     t = 0.0
-    steps_number = tools.max_diff([p1x, p4x, r1x, r4x]) + tools.max_diff([p1y, p4y, r1y, r4y])
+    steps_number = count_steps(curve.points)
     t_incr = 1.0 / (steps_number + 1)
 
     while t <= 1.0:
@@ -229,7 +232,7 @@ def bezier_curve(draw_func, curve):
     p3x, p3y = curve.points[3]
 
     t = 0.0
-    steps_number = tools.max_diff([p1x, p2x, p3x, p4x]) + tools.max_diff([p1y, p2x, p3x, p4y])
+    steps_number = count_steps(curve.points)
     t_incr = 1.0 / ((steps_number + 1) * 2)
 
     while t <= 1.0:
@@ -244,3 +247,31 @@ def bezier_curve(draw_func, curve):
         draw_func(tools.Pixel(x, y))
 
         t += t_incr
+
+
+@algorithm(u'B-сплайн', figure.ExtendibleCurve)
+def b_splain(draw_func, curve):
+    points = curve.points[:1] + curve.points + curve.points[-1:]
+    for p0, p1, p2, p3 in tools.ntuples(points, 4):
+        a0, a1, a2, a3 = b_splain_coefs(p0.x, p1.x, p2.x, p3.x)
+        b0, b1, b2, b3 = b_splain_coefs(p0.y, p1.y, p2.y, p3.y)
+
+        steps_number = count_steps([p0, p1, p2, p3])
+        t_incr = 1.0 / (steps_number + 1)
+
+        t = 0.0
+        while t <= 1.0:
+            x = ((a3 * t + a2) * t + a1) * t + a0
+            y = ((b3 * t + b2) * t + b1) * t + b0
+
+            draw_func(tools.Pixel(x, y))
+
+            t += t_incr
+
+def b_splain_coefs(v0, v1, v2, v3):
+    c3 = (-v0 + 3 * v1 - 3 * v2 + v3) / 6.
+    c2 = (v0 - 2 * v1 + v2) / 2.
+    c1 = (-v0 + v2) / 2.
+    c0 = (v0 + 4 * v1 + v2) / 6.
+    return c0, c1, c2, c3
+

@@ -78,6 +78,7 @@ class SceneView(QWidget):
 
     def clear_scene(self):
         self._scene.clear()
+        self._controller.reset()
         self.repaint()
 
     def paintEvent(self, event):
@@ -116,8 +117,6 @@ class SceneView(QWidget):
         if event.button() == Qt.LeftButton and self._controller:
             self._leftButtonPressed = True
             self._controller.press(event.posF(), self._specials)
-            # pixel = self.point_pixel(event.posF())
-            # self._controller.click(pixel)
             self.repaint()
         return super(SceneView, self).mousePressEvent(event)
 
@@ -136,7 +135,7 @@ class SceneView(QWidget):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Escape and self._controller:
-            self._controller.reset_clicks()
+            self._controller.reset()
             self.repaint()
 
     def grid_enabled(self):
@@ -156,9 +155,8 @@ class SceneView(QWidget):
         self.repaint()
 
     def _pixel_rect(self, pixel):
-        left = pixel.x * self._pixel_size
-        top = pixel.y * self._pixel_size
-        return QRectF(left, top, self._pixel_size, self._pixel_size)
+        return QRectF(pixel.x * self._pixel_size, pixel.y * self._pixel_size,
+                      self._pixel_size, self._pixel_size)
 
     def point_pixel(self, point):
         pixel_x = point.x() / self._pixel_size
