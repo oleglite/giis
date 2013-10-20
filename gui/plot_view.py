@@ -96,19 +96,6 @@ class SceneView(QWidget):
 
         self._painter.end()
 
-    def draw_pixel(self, pixel, color):
-        pixel_x = tools.rounded_int(pixel.x)
-        pixel_y = tools.rounded_int(pixel.y)
-        if pixel_x < self._scene_size.width and pixel_y < self._scene_size.height:
-            rect = self._pixel_rect(tools.Pixel(pixel_x, pixel_y))
-
-            if self._is_one_pixel_size:
-                self._painter.setPen(QPen(color))
-                self._painter.drawPoint(QPointF(rect.x(), rect.y()))
-            else:
-                self._painter.setBrush(QBrush(color))
-                self._painter.drawRect(rect)
-
     def resizeEvent(self, event):
         self._pixel_size = float(self.rect().width()) / self._scene_size.width
         self._is_one_pixel_size = self._pixel_size <= 1
@@ -117,7 +104,6 @@ class SceneView(QWidget):
         if event.button() == Qt.LeftButton and self._controller:
             self._leftButtonPressed = True
             self._controller.press(event.posF(), self._specials)
-            self.repaint()
         return super(SceneView, self).mousePressEvent(event)
 
     def mouseReleaseEvent(self, event):
@@ -154,9 +140,16 @@ class SceneView(QWidget):
         self._special_enabled = is_enabled
         self.repaint()
 
-    def _pixel_rect(self, pixel):
-        return QRectF(pixel.x * self._pixel_size, pixel.y * self._pixel_size,
-                      self._pixel_size, self._pixel_size)
+    def draw_pixel(self, pixel_x, pixel_y, color):
+        if pixel_x < self._scene_size.width and pixel_y < self._scene_size.height:
+            rect = self._pixel_rect(pixel_x, pixel_y)
+
+            if self._is_one_pixel_size:
+                self._painter.setPen(QPen(color))
+                self._painter.drawPoint(QPointF(rect.x(), rect.y()))
+            else:
+                self._painter.setBrush(QBrush(color))
+                self._painter.drawRect(rect)
 
     def point_pixel(self, point):
         pixel_x = point.x() / self._pixel_size
@@ -166,6 +159,10 @@ class SceneView(QWidget):
         pixel_y = tools.place_between(pixel_y, 0, self._scene_size.height - 1)
 
         return Pixel(int(pixel_x), int(pixel_y))
+
+    def _pixel_rect(self, x, y):
+        return QRectF(x * self._pixel_size, y * self._pixel_size,
+                      self._pixel_size, self._pixel_size)
 
     def __draw_background(self):
         self._painter.fillRect(self.rect(), self._look.background_brush)
@@ -210,12 +207,12 @@ class SceneView(QWidget):
 
         for figure in self._scene:
             for i, pixel in enumerate(figure.points):
-                rect = self._pixel_rect(pixel)
+                rect = self._pixel_rect(pixel.x, pixel.y)
                 center = QPointF(rect.x() + rect.width() / 2., rect.y() + rect.height() / 2.)
                 radius = self._look.special_size
                 self._painter.drawEllipse(center, radius, radius)
                 self._specials.append(tools.SpecialTuple(center, figure, i))
 
     def __draw_clicks(self):
-        for click in self._controller.clicks:
-            self.draw_pixel(click, self._look.default_palette['click'])
+        for x, y in self._controller.clicks:
+            self.draw_pixel(x, y, self._look.default_palette['click'])

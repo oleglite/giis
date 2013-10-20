@@ -3,7 +3,6 @@
 from plot import figure
 
 import tools
-from tools import Pixel
 import collections
 import reflections
 
@@ -36,8 +35,7 @@ def DDA(draw_func, figure):
     y = y1
 
     for i in xrange(int(length) + 1):
-        pixel = Pixel(x, y)
-        draw_func(pixel)
+        draw_func(tools.rounded_int(x), tools.rounded_int(y))
         x += dx
         y += dy
 
@@ -54,7 +52,7 @@ def bresenham(draw_func, figure):
 
     error = dx - dy
     while x1 != x2 or y1 != y2:
-        draw_func(Pixel(x1, y1))
+        draw_func(x1, y1)
         error2 = error * 2
         if error2 > -dy:
             error -= dy
@@ -62,7 +60,7 @@ def bresenham(draw_func, figure):
         if error2 < dx:
             error += dx
             y1 += signY
-    draw_func(point2)
+    draw_func(x2, y2)
 
 @algorithm(name=u'Алгоритм Ву', figure_cls=figure.Line)
 def wu(draw_func, figure):
@@ -76,12 +74,12 @@ def wu(draw_func, figure):
 
     if not dx:
         for y in xrange(y1, y2 + signY, signY):
-            draw_func(Pixel(x1, y))
+            draw_func(x1, y)
         return
 
     if not dy:
         for x in xrange(x1, x2 + signX, signX):
-            draw_func(Pixel(x, y1))
+            draw_func(x, y1)
         return
 
     gradientY = float(dy) / dx
@@ -91,19 +89,19 @@ def wu(draw_func, figure):
         for x in xrange(x1, x2 + signX, signX):
             y = y1 + abs(x - x1) * gradientY * signY
             y_pos = tools.fpart(y)
-            draw_func(Pixel(x, int(y)), (1 - y_pos))
-            draw_func(Pixel(x, int(y) + 1), y_pos)
+            draw_func(x, int(y), (1 - y_pos))
+            draw_func(x, int(y) + 1, y_pos)
     else:
         for y in xrange(y1, y2 + signY, signY):
             x = x1 + abs(y - y1) * gradientX * signX
             x_pos = tools.fpart(x)
-            draw_func(Pixel(int(x), y), (1 - x_pos))
-            draw_func(Pixel(int(x) + 1, y), x_pos)
+            draw_func(int(x), y, (1 - x_pos))
+            draw_func(int(x) + 1, y, x_pos)
 
 @algorithm(name=u'Алгоритм Брезенхема для окружности', figure_cls=figure.Circle)
 def bresenham_circle(draw_func, circle):
     reflector = reflections.Reflector(draw_func)
-    h_line = figure.Line([circle.points[0], Pixel(circle.x0 + circle.R, circle.y0)])
+    h_line = figure.Line([circle.points[0], tools.Pixel(circle.x0 + circle.R, circle.y0)])
     reflector.append(reflections.LineReflection(h_line))
     reflector.append(reflections.PointReflection(circle.points[0]))
 
@@ -111,8 +109,7 @@ def bresenham_circle(draw_func, circle):
     di = 0#2 - 2 * circle.R
 
     while y >= 0:
-        p = Pixel(x + circle.x0, int(y) + circle.y0)
-        reflector.draw_func(p)
+        reflector.draw_func(x + circle.x0, int(y) + circle.y0)
 
         h_incr = 2 * x + 1
         v_incr = -2 * y + 1
@@ -156,7 +153,7 @@ def bres_like_parabola(draw_func, parabola):
     di = 0
     increment = tools.sign(parabola.params['p'])
 
-    draw_func(parabola.points[0])
+    draw_func(*parabola.points[0])
 
     while 0 < x < x_max:
         dh = di + 2 * p
@@ -186,8 +183,8 @@ def bres_like_parabola(draw_func, parabola):
             y += 1
             di += 2 * (p - y) - 1
 
-        draw_func(Pixel(x, y0 + y))
-        draw_func(Pixel(x, y0 - y))
+        draw_func(x, y0 + y)
+        draw_func(x, y0 - y)
 
 def count_steps(points):
     return tools.max_diff([point.x for point in points]) + tools.max_diff([point.y for point in points])
@@ -220,7 +217,7 @@ def ermit_curve(draw_func, curve):
         x = p1x * p1_mul + p4x * p4_mul + r1x * r1_mul + r4x * r4_mul
         y = p1y * p1_mul + p4y * p4_mul + r1y * r1_mul + r4y * r4_mul
 
-        draw_func(tools.Pixel(x, y))
+        draw_func(tools.rounded_int(x), tools.rounded_int(y))
 
         t += t_incr
 
@@ -244,7 +241,7 @@ def bezier_curve(draw_func, curve):
         x = p1x * p1_mul + p2x * p2_mul + p3x * p3_mul + p4x * p4_mul
         y = p1y * p1_mul + p2y * p2_mul + p3y * p3_mul + p4y * p4_mul
 
-        draw_func(tools.Pixel(x, y))
+        draw_func(tools.rounded_int(x), tools.rounded_int(y))
 
         t += t_incr
 
@@ -264,7 +261,7 @@ def b_splain(draw_func, curve):
             x = ((a3 * t + a2) * t + a1) * t + a0
             y = ((b3 * t + b2) * t + b1) * t + b0
 
-            draw_func(tools.Pixel(x, y))
+            draw_func(tools.rounded_int(x), tools.rounded_int(y))
 
             t += t_incr
 

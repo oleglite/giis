@@ -13,9 +13,9 @@ class Reflector:
     def append(self, reflecion):
         self._reflections.append(reflecion)
 
-    def draw_func(self, source_pixel, alpha=1.0):
-        for pixel in self._reflected(source_pixel):
-            self._primary_draw_func(pixel, alpha)
+    def draw_func(self, x, y, alpha=1.0):
+        for pixel in self._reflected(Pixel(x, y)):
+            self._primary_draw_func(pixel.x, pixel.y, alpha)
 
     def _reflected(self, source_pixel):
         pixels = set([source_pixel])

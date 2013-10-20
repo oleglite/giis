@@ -64,12 +64,12 @@ class Drawer(object):
     def begin(self, scene_item):
         self._scene_item = scene_item
 
-    def draw_func(self, pixel, alpha=1.0):
+    def draw_func(self, x, y, alpha=1.0):
         color = self._scene_item.palette['base']
         if alpha < 1.0:
             color = QColor(self._scene_item.palette['base'])
             color.setAlphaF(alpha)
-        self._context.draw_pixel(pixel, color)
+        self._context.draw_pixel(x, y, color)
 
 
 class DebugDrawer(Drawer):
@@ -84,9 +84,9 @@ class DebugDrawer(Drawer):
         super(DebugDrawer, self).begin(scene_item)
         self._current_drawing_step = 0
 
-    def draw_func(self, pixel, alpha=1.0):
+    def draw_func(self, x, y, alpha=1.0):
         if not self._enabled or self._current_drawing_step < self._steps_number:
-            super(DebugDrawer, self).draw_func(pixel, alpha)
+            super(DebugDrawer, self).draw_func(x, y, alpha)
             self._current_drawing_step += 1
 
     def draw_next(self):
