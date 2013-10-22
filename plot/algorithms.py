@@ -198,8 +198,8 @@ def ermit_curve(draw_func, curve):
 
     r1x -= p1x
     r1y -= p1y
-    r4x -= p1x
-    r4y -= p1y
+    r4x -= p4x
+    r4y -= p4y
 
     t = 0.0
     steps_number = count_steps(curve.points)
