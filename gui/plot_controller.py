@@ -23,6 +23,7 @@ class SceneController(BaseController):
 
     def set_algorithm(self, algorithm):
         self._current_algorithm = algorithm
+        self.reset()
 
     @property
     def clicks(self):
