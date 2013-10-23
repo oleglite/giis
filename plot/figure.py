@@ -23,11 +23,11 @@ class Figure(object):
         self._params = params
 
     def __str__(self):
-        text = '%s%s' % (self.NAME, str(self._points))
-        if self._params:
-            required_params = dict(tools.filtered_items(self._params, self.REQUIRED_PARAMS))
-            text += unicode(required_params)
-        return text
+        if self.REQUIRED_PARAMS:
+            params = list(tools.filtered_items(self._params, self.REQUIRED_PARAMS))
+            return '%s(%r, %r)' % (self.NAME, self._points, params)
+        else:
+            return '%s(%r)' % (self.NAME, self._points)
 
     @property
     def points(self):
@@ -42,9 +42,6 @@ class Figure(object):
 
 
 class ExtendibleFigure(Figure):
-    # def __init__(self, points, params={}):
-    #     super(ExtendibleFigure, self).__init__(points, params)
-
     def add_point(self, point):
         self._points.append(point)
 
@@ -79,6 +76,9 @@ class Circle(Figure):
         self.x0, self.y0 = self._points[0]
         p = self._points[1]
         self.R = ((p.x - self.x0) ** 2 + (p.y - self.y0) ** 2) ** 0.5
+
+    def __str__(self):
+        return '%s(O=%s, R=%.2f)' % (self.NAME, self._points[0], self.R)
 
 
 class Parabola(Figure):
