@@ -57,7 +57,6 @@ class SceneController(BaseController):
         if isinstance(figure, plot.figure.ExtendibleFigure):
             self._current_extendible_figure = figure
 
-        #self._view.update()
         self.debug_log.emit('%s' % (figure))
 
 

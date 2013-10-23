@@ -141,15 +141,12 @@ class SceneView(QWidget):
         self.repaint()
 
     def draw_pixel(self, pixel_x, pixel_y, color):
-        if pixel_x < self._scene_size.width and pixel_y < self._scene_size.height:
-            rect = self._pixel_rect(pixel_x, pixel_y)
-
-            if self._is_one_pixel_size:
-                self._painter.setPen(QPen(color))
-                self._painter.drawPoint(QPointF(rect.x(), rect.y()))
-            else:
-                self._painter.setBrush(QBrush(color))
-                self._painter.drawRect(rect)
+        if self._is_one_pixel_size:
+            self._painter.setPen(QPen(color))
+            self._painter.drawPoint(QPoint(pixel_x * self._pixel_size, pixel_y * self._pixel_size))
+        else:
+            self._painter.setBrush(QBrush(color))
+            self._painter.drawRect(self._pixel_rect(pixel_x, pixel_y))
 
     def point_pixel(self, point):
         pixel_x = point.x() / self._pixel_size
@@ -161,7 +158,7 @@ class SceneView(QWidget):
         return Pixel(int(pixel_x), int(pixel_y))
 
     def _pixel_rect(self, x, y):
-        return QRectF(x * self._pixel_size, y * self._pixel_size,
+        return QRect(x * self._pixel_size, y * self._pixel_size,
                       self._pixel_size, self._pixel_size)
 
     def __draw_background(self):
