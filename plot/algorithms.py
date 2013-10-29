@@ -144,16 +144,24 @@ def bresenham_circle(circle):
 
 @algorithm(name=u'Парабола', figure_cls=figure.Parabola)
 def bres_like_parabola(parabola):
-    x, y0 = parabola.points[0]
+    x1, y1 = parabola.points[0]
+    x2, y2 = parabola.points[1]
+
+    p = abs(x1 - x2)
+    increment = tools.sign(x1 - x2)
+
+    x = x1 - increment * p / 2
+    y0 = y1
     y = 0
 
-    p = abs(parabola.params['p'])
     x_max = parabola.params['scene_size'].width
 
     di = 0
-    increment = tools.sign(parabola.params['p'])
 
-    yield parabola.points[0]
+    yield x, y0
+
+    if not p:
+        return
 
     while 0 < x < x_max:
         dh = di + 2 * p

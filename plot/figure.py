@@ -33,12 +33,26 @@ class Figure(object):
     def points(self):
         return self._points
 
-    def set_point(self, point, number):
-        self._points[number] = point
-
     @property
     def params(self):
         return self._params
+
+    def set_point(self, point, point_number):
+        self._points[point_number] = point
+
+    def _set_point_relative(self, point, point_number, dependent_point_number):
+        dx = point.x - self._points[point_number].x
+        dy = point.y - self._points[point_number].y
+
+        Figure.set_point(self, point, point_number)
+
+        dependent_point = self._points[dependent_point_number]
+        Figure.set_point(self, tools.Pixel(dependent_point.x + dx, dependent_point.y + dy), dependent_point_number)
+
+    def _move_figure(self, dx, dy):
+        for point_number, point in enumerate(self._points):
+            Figure.set_point(self, tools.Pixel(point.x + dx, point.y + dy), point_number)
+
 
 
 class ExtendibleFigure(Figure):
@@ -65,9 +79,7 @@ class Circle(Figure):
         if number == 0:
             dx = point.x - self._points[0].x
             dy = point.y - self._points[0].y
-
-            Figure.set_point(self, point, 0)
-            Figure.set_point(self, tools.Pixel(self._points[1].x + dx, self._points[1].y + dy), 1)
+            self._move_figure(dx, dy)
         else:
             super(Circle, self).set_point(point, number)
         self.__update()
@@ -82,9 +94,22 @@ class Circle(Figure):
 
 
 class Parabola(Figure):
-    POINTS_NUMBER = 1
-    REQUIRED_PARAMS = ['p']
+    POINTS_NUMBER = 2
     NAME = u'Парабола'
+
+    def __init__(self, points, params={}):
+        points[1] = tools.Pixel(points[1].x, points[0].y)
+        super(Parabola, self).__init__(points, params)
+
+    def set_point(self, point, number):
+        assert 0 <= number < self.POINTS_NUMBER
+
+        if number == 0:
+            dx = point.x - self._points[0].x
+            dy = point.y - self._points[0].y
+            self._move_figure(dx, dy)
+        else:
+            Figure.set_point(self, tools.Pixel(point.x, self.points[1].y), 1)
 
 
 class Curve(Figure):
