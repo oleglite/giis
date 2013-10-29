@@ -9,17 +9,18 @@ import reflections
 by_name = collections.OrderedDict()
 
 
-def algorithm(name, figure_cls):
+def algorithm(name, figure_cls, alpha=False):
     def wrap(func):
         func.NAME = name
         func.Figure = figure_cls
+        func.alpha = alpha
         by_name[name] = func
         return func
     return wrap
 
 
 @algorithm(name=u'ЦДА', figure_cls=figure.Line)
-def DDA(draw_func, figure):
+def DDA(figure):
     point1, point2 = figure.points
     x1, y1 = point1.x, point1.y
     x2, y2 = point2.x, point2.y
@@ -35,13 +36,13 @@ def DDA(draw_func, figure):
     y = y1
 
     for i in xrange(int(length) + 1):
-        draw_func(tools.rounded_int(x), tools.rounded_int(y))
+        yield tools.rounded_int(x), tools.rounded_int(y)
         x += dx
         y += dy
 
 
 @algorithm(name=u'Алгоритм Брезенхема', figure_cls=figure.Line)
-def bresenham(draw_func, figure):
+def bresenham(figure):
     point1, point2 = figure.points
     x1, y1 = point1.x, point1.y
     x2, y2 = point2.x, point2.y
@@ -52,7 +53,7 @@ def bresenham(draw_func, figure):
 
     error = dx - dy
     while x1 != x2 or y1 != y2:
-        draw_func(x1, y1)
+        yield x1, y1
         error2 = error * 2
         if error2 > -dy:
             error -= dy
@@ -60,10 +61,10 @@ def bresenham(draw_func, figure):
         if error2 < dx:
             error += dx
             y1 += signY
-    draw_func(x2, y2)
+    yield x2, y2
 
-@algorithm(name=u'Алгоритм Ву', figure_cls=figure.Line)
-def wu(draw_func, figure):
+@algorithm(name=u'Алгоритм Ву', figure_cls=figure.Line, alpha=True)
+def wu(figure):
     point1, point2 = figure.points
     x1, y1 = point1.x, point1.y
     x2, y2 = point2.x, point2.y
@@ -74,14 +75,12 @@ def wu(draw_func, figure):
 
     if not dx:
         for y in xrange(y1, y2 + signY, signY):
-            draw_func(x1, y)
+            yield x1, y
         return
 
     if not dy:
         for x in xrange(x1, x2 + signX, signX):
-            draw_func(x, y1)
-        return
-
+            yield x, y1
     gradientY = float(dy) / dx
     gradientX = float(dx) / dy
 
@@ -89,27 +88,28 @@ def wu(draw_func, figure):
         for x in xrange(x1, x2 + signX, signX):
             y = y1 + abs(x - x1) * gradientY * signY
             y_pos = tools.fpart(y)
-            draw_func(x, int(y), (1 - y_pos))
-            draw_func(x, int(y) + 1, y_pos)
+            yield x, int(y), (1 - y_pos)
+            yield x, int(y) + 1, y_pos
     else:
         for y in xrange(y1, y2 + signY, signY):
             x = x1 + abs(y - y1) * gradientX * signX
             x_pos = tools.fpart(x)
-            draw_func(int(x), y, (1 - x_pos))
-            draw_func(int(x) + 1, y, x_pos)
+            yield int(x), y, (1 - x_pos)
+            yield int(x) + 1, y, x_pos
 
 @algorithm(name=u'Алгоритм Брезенхема для окружности', figure_cls=figure.Circle)
-def bresenham_circle(draw_func, circle):
-    reflector = reflections.Reflector(draw_func)
+def bresenham_circle(circle):
+    reflector = reflections.Reflector()
     h_line = figure.Line([circle.points[0], tools.Pixel(circle.x0 + circle.R, circle.y0)])
-    reflector.append(reflections.LineReflection(h_line))
-    reflector.append(reflections.PointReflection(circle.points[0]))
+    reflector.add_reflection(reflections.LineReflection(h_line))
+    reflector.add_reflection(reflections.PointReflection(circle.points[0]))
 
     x, y = 0, circle.R
-    di = 0#2 - 2 * circle.R
+    di = 0
 
     while y >= 0:
-        reflector.draw_func(x + circle.x0, int(y) + circle.y0)
+        for point in reflector.reflect(x + circle.x0, int(y) + circle.y0):
+            yield point
 
         h_incr = 2 * x + 1
         v_incr = -2 * y + 1
@@ -143,7 +143,7 @@ def bresenham_circle(draw_func, circle):
             di += d_incr
 
 @algorithm(name=u'Парабола', figure_cls=figure.Parabola)
-def bres_like_parabola(draw_func, parabola):
+def bres_like_parabola(parabola):
     x, y0 = parabola.points[0]
     y = 0
 
@@ -153,7 +153,7 @@ def bres_like_parabola(draw_func, parabola):
     di = 0
     increment = tools.sign(parabola.params['p'])
 
-    draw_func(*parabola.points[0])
+    yield parabola.points[0]
 
     while 0 < x < x_max:
         dh = di + 2 * p
@@ -183,14 +183,14 @@ def bres_like_parabola(draw_func, parabola):
             y += 1
             di += 2 * (p - y) - 1
 
-        draw_func(x, y0 + y)
-        draw_func(x, y0 - y)
+        yield x, y0 + y
+        yield x, y0 - y
 
 def count_steps(points):
     return tools.max_diff([point.x for point in points]) + tools.max_diff([point.y for point in points])
 
 @algorithm(u'Метод Эрмита', figure.Curve)
-def ermit_curve(draw_func, curve):
+def ermit_curve(curve):
     p1x, p1y = curve.points[0]
     p4x, p4y = curve.points[1]
     r1x, r1y = curve.points[2]
@@ -217,12 +217,12 @@ def ermit_curve(draw_func, curve):
         x = p1x * p1_mul + p4x * p4_mul + r1x * r1_mul + r4x * r4_mul
         y = p1y * p1_mul + p4y * p4_mul + r1y * r1_mul + r4y * r4_mul
 
-        draw_func(tools.rounded_int(x), tools.rounded_int(y))
+        yield tools.rounded_int(x), tools.rounded_int(y)
 
         t += t_incr
 
 @algorithm(u'Кривая Безье', figure.Curve)
-def bezier_curve(draw_func, curve):
+def bezier_curve(curve):
     p1x, p1y = curve.points[0]
     p4x, p4y = curve.points[1]
     p2x, p2y = curve.points[2]
@@ -241,15 +241,14 @@ def bezier_curve(draw_func, curve):
         x = p1x * p1_mul + p2x * p2_mul + p3x * p3_mul + p4x * p4_mul
         y = p1y * p1_mul + p2y * p2_mul + p3y * p3_mul + p4y * p4_mul
 
-        draw_func(tools.rounded_int(x), tools.rounded_int(y))
+        yield tools.rounded_int(x), tools.rounded_int(y)
 
         t += t_incr
 
 
 @algorithm(u'B-сплайн', figure.ExtendibleCurve)
-def b_splain(draw_func, curve):
-    points = curve.points[:1] + curve.points + curve.points[-1:]
-    for p0, p1, p2, p3 in tools.ntuples(points, 4):
+def b_splain(curve):
+    for p0, p1, p2, p3 in tools.ntuples(curve.points, 4):
         a0, a1, a2, a3 = b_splain_coefs(p0.x, p1.x, p2.x, p3.x)
         b0, b1, b2, b3 = b_splain_coefs(p0.y, p1.y, p2.y, p3.y)
 
@@ -261,7 +260,7 @@ def b_splain(draw_func, curve):
             x = ((a3 * t + a2) * t + a1) * t + a0
             y = ((b3 * t + b2) * t + b1) * t + b0
 
-            draw_func(tools.rounded_int(x), tools.rounded_int(y))
+            yield tools.rounded_int(x), tools.rounded_int(y)
 
             t += t_incr
 

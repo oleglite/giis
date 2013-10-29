@@ -140,12 +140,16 @@ class SceneView(QWidget):
         self._special_enabled = is_enabled
         self.repaint()
 
-    def draw_pixel(self, pixel_x, pixel_y, color):
+    def set_draw_color(self, color):
         if self._is_one_pixel_size:
             self._painter.setPen(QPen(color))
-            self._painter.drawPoint(QPoint(pixel_x * self._pixel_size, pixel_y * self._pixel_size))
         else:
             self._painter.setBrush(QBrush(color))
+
+    def draw_pixel(self, pixel_x, pixel_y):
+        if self._is_one_pixel_size:
+            self._painter.drawPoint(QPoint(pixel_x * self._pixel_size, pixel_y * self._pixel_size))
+        else:
             self._painter.drawRect(self._pixel_rect(pixel_x, pixel_y))
 
     def point_pixel(self, point):
@@ -158,7 +162,7 @@ class SceneView(QWidget):
         return Pixel(int(pixel_x), int(pixel_y))
 
     def _pixel_rect(self, x, y):
-        return QRect(x * self._pixel_size, y * self._pixel_size,
+        return QRectF(x * self._pixel_size, y * self._pixel_size,
                       self._pixel_size, self._pixel_size)
 
     def __draw_background(self):
@@ -185,15 +189,15 @@ class SceneView(QWidget):
 
         for i in xrange(0, self._scene_size.width + 1):
             line_x = i * self._pixel_size
-            point1 = QPointF(line_x, rect_top)
-            point2 = QPointF(line_x, rect_bottom)
-            lines.append(QLineF(point1, point2))
+            point1 = QPoint(line_x, rect_top)
+            point2 = QPoint(line_x, rect_bottom)
+            lines.append(QLine(point1, point2))
 
         for i in xrange(0, self._scene_size.height + 1):
             line_y = i * self._pixel_size
-            point1 = QPointF(rect_left, line_y)
-            point2 = QPointF(rect_right, line_y)
-            lines.append(QLineF(point1, point2))
+            point1 = QPoint(rect_left, line_y)
+            point2 = QPoint(rect_right, line_y)
+            lines.append(QLine(point1, point2))
 
         self._painter.drawLines(lines)
 
@@ -211,5 +215,6 @@ class SceneView(QWidget):
                 self._specials.append(tools.SpecialTuple(center, figure, i))
 
     def __draw_clicks(self):
+        self.set_draw_color(self._look.default_palette['click'])
         for x, y in self._controller.clicks:
-            self.draw_pixel(x, y, self._look.default_palette['click'])
+            self.draw_pixel(x, y)

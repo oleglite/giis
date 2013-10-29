@@ -6,16 +6,15 @@ from figure import Line
 
 
 class Reflector:
-    def __init__(self, draw_func):
-        self._primary_draw_func = draw_func
+    def __init__(self):
         self._reflections = []
 
-    def append(self, reflecion):
+    def add_reflection(self, reflecion):
         self._reflections.append(reflecion)
 
-    def draw_func(self, x, y, alpha=1.0):
+    def reflect(self, x, y):
         for pixel in self._reflected(Pixel(x, y)):
-            self._primary_draw_func(pixel.x, pixel.y, alpha)
+            yield pixel.x, pixel.y
 
     def _reflected(self, source_pixel):
         pixels = set([source_pixel])
