@@ -12,13 +12,14 @@ class SceneLook:
     grid_pen = QPen(Qt.gray)
     special_pen = QPen(Qt.gray)
     special_brush = QBrush(Qt.green)
+    selected_special_brush = QBrush(Qt.blue)
 
     default_palette = {
         'base': Qt.black,
         'click': Qt.red,
     }
 
-    special_size = 4
+    special_size = 5
 
 
 def scene_widget(scene_size):
@@ -203,10 +204,13 @@ class SceneView(QWidget):
 
     def __draw_specials(self):
         self._painter.setPen(self._look.special_pen)
-        self._painter.setBrush(self._look.special_brush)
         self._specials = []
+        selected_figure = self._controller.selected_figure
 
         for figure in self._scene:
+            brush = self._look.selected_special_brush if figure is selected_figure else self._look.special_brush
+            self._painter.setBrush(brush)
+
             for i, pixel in enumerate(figure.points):
                 rect = self._pixel_rect(pixel.x, pixel.y)
                 center = QPointF(rect.x() + rect.width() / 2., rect.y() + rect.height() / 2.)

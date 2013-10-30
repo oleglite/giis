@@ -9,6 +9,8 @@ class BaseController(QObject):
     debug_log = Signal(str)
 
 class SceneController(BaseController):
+    figure_selected = Signal(str)
+
     def __init__(self, view, scene):
         super(SceneController, self).__init__()
         self._view = view
@@ -17,6 +19,7 @@ class SceneController(BaseController):
         self._clicks = []
         self._current_algorithm = None
         self._current_extendible_figure = None
+        self._selected_figure = None
 
     def get_algorithm(self):
         return self._current_algorithm
@@ -24,6 +27,22 @@ class SceneController(BaseController):
     def set_algorithm(self, algorithm):
         self._current_algorithm = algorithm
         self.reset()
+
+    @property
+    def selected_figure(self):
+        return self._selected_figure
+
+    def _select_figure(self, figure=None):
+        if figure is self._selected_figure:
+            return
+
+        self._selected_figure = figure
+        if figure:
+            description = unicode(figure)
+        else:
+            description = u''
+
+        self.figure_selected.emit(description)
 
     @property
     def clicks(self):
@@ -45,6 +64,7 @@ class SceneController(BaseController):
     def reset(self):
         self._clicks = []
         self._current_extendible_figure = None
+        self._select_figure()
 
     def _create_figure(self):
         params = gui.dialogs.FigureDialog.request_params(self._current_algorithm.Figure)
@@ -55,6 +75,7 @@ class SceneController(BaseController):
 
         figure = self._current_algorithm.Figure(self._clicks, params)
         self._scene.append(figure, self._current_algorithm, self._view.look.default_palette)
+        self._select_figure(figure)
         if isinstance(figure, plot.figure.ExtendibleFigure):
             self._current_extendible_figure = figure
 
@@ -73,6 +94,7 @@ class SpecialController(SceneController):
                 if (abs(point.x() - special.center.x()) <= self._special_size and
                     abs(point.y() - special.center.y()) <= self._special_size):
                     self._pressed_special = special
+                    self._select_figure(special.figure)
                     return
 
         pixel = self._view.point_pixel(point)
