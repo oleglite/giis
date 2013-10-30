@@ -75,27 +75,32 @@ def wu(figure):
 
     if not dx:
         for y in xrange(y1, y2 + signY, signY):
-            yield x1, y
+            yield x1, y, 1.0
         return
 
     if not dy:
         for x in xrange(x1, x2 + signX, signX):
-            yield x, y1
-    gradientY = float(dy) / dx
-    gradientX = float(dx) / dy
+            yield x, y1, 1.0
+        return
+    gradientY = float(dy * signY) / dx
+    gradientX = float(dx * signX) / dy
 
     if dx > dy:
+        y = y1
+        y_pos = 0
         for x in xrange(x1, x2 + signX, signX):
-            y = y1 + abs(x - x1) * gradientY * signY
-            y_pos = tools.fpart(y)
             yield x, int(y), (1 - y_pos)
             yield x, int(y) + 1, y_pos
+            y += gradientY
+            y_pos = tools.fpart(y)
     else:
+        x = x1
+        x_pos = 0
         for y in xrange(y1, y2 + signY, signY):
-            x = x1 + abs(y - y1) * gradientX * signX
-            x_pos = tools.fpart(x)
             yield int(x), y, (1 - x_pos)
             yield int(x) + 1, y, x_pos
+            x += gradientX
+            x_pos = tools.fpart(x)
 
 @algorithm(name=u'Алгоритм Брезенхема для окружности', figure_cls=figure.Circle)
 def bresenham_circle(circle):
