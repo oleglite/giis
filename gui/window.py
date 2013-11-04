@@ -41,7 +41,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _init_status_bar(self):
         self.algorithmLabel = QLabel('')
+        self.selectedFigureLabel = QLabel('')
+
         self.statusBar.addWidget(self.algorithmLabel)
+        self.statusBar.addWidget(self.selectedFigureLabel)
         self._update_status_bar()
 
     def _change_algorithm(self, action):
@@ -93,8 +96,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionDebug.toggled.connect(self.debugTextBrowser.setVisible)
         self.actionDebug.triggered.connect(self.debugTextBrowser.clear)
         self._scene_widget.get_controller().debug_log.connect(self._add_debug_message)
+        self._scene_widget.get_controller().selected_figure_changed.connect(self._set_selected_figure_message)
 
     def _add_debug_message(self, message):
         prev_text = self.debugTextBrowser.toPlainText()
         self.debugTextBrowser.setText('%s%s\n' % (prev_text, message))
         self.debugTextBrowser.moveCursor(QTextCursor.End)
+
+    def _set_selected_figure_message(self, message):
+        self.selectedFigureLabel.setText(message)

@@ -9,7 +9,7 @@ class BaseController(QObject):
     debug_log = Signal(str)
 
 class SceneController(BaseController):
-    figure_selected = Signal(str)
+    selected_figure_changed = Signal(str)
 
     def __init__(self, view, scene):
         super(SceneController, self).__init__()
@@ -37,12 +37,7 @@ class SceneController(BaseController):
             return
 
         self._selected_figure = figure
-        if figure:
-            description = unicode(figure)
-        else:
-            description = u''
-
-        self.figure_selected.emit(description)
+        self._emit_selected_figure()
 
     @property
     def clicks(self):
@@ -81,6 +76,10 @@ class SceneController(BaseController):
 
         self.debug_log.emit('%s' % (figure))
 
+    def _emit_selected_figure(self):
+        description = unicode(self._selected_figure) if self._selected_figure else u''
+        self.selected_figure_changed.emit(description)
+
 
 class SpecialController(SceneController):
     def __init__(self, view, scene):
@@ -107,3 +106,4 @@ class SpecialController(SceneController):
         if self._pressed_special:
             pixel = self._view.point_pixel(point)
             self._pressed_special.figure.set_point(pixel, self._pressed_special.point_number)
+        self._emit_selected_figure()
