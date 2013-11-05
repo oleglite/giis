@@ -84,18 +84,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionNext.setEnabled(False)
 
         self.actionClean.triggered.connect(self._scene_widget.clear_scene)
-        self.actionDebug.toggled.connect(self._scene_widget.scene.set_debug)
+        self.actionDebug.toggled.connect(self._enable_debug)
         self.actionNext.triggered.connect(self._scene_widget.scene.debug_next)
         self.actionNext.triggered.connect(self._scene_widget.repaint)
         self.actionEnableGrid.toggled.connect(self._scene_widget.set_grid_enabled)
         self.actionEnableSpecial.toggled.connect(self._scene_widget.set_special_enabled)
 
-        self.actionDebug.toggled.connect(self.actionNext.setEnabled)
-
         self.debugTextBrowser.setVisible(self.actionDebug.isChecked())
-        self.actionDebug.toggled.connect(self.debugTextBrowser.setVisible)
-        self.actionDebug.triggered.connect(self.debugTextBrowser.clear)
         self._scene_widget.get_controller().debug_log.connect(self._add_debug_message)
+        self._scene_widget.scene.debug_next_message.connect(self._add_debug_message)
         self._scene_widget.get_controller().selected_figure_changed.connect(self._set_selected_figure_message)
 
     def _add_debug_message(self, message):
@@ -105,3 +102,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _set_selected_figure_message(self, message):
         self.selectedFigureLabel.setText(message)
+
+    def _enable_debug(self, is_enabled):
+        self._scene_widget.scene.set_debug(is_enabled)
+        self.actionNext.setEnabled(is_enabled)
+        self.debugTextBrowser.setVisible(is_enabled)
+        self.debugTextBrowser.clear()
+
+        if is_enabled:
+            self.actionEnableSpecial.setEnabled(False)
+            self._scene_widget.set_special_enabled(False)
+        else:
+            self.actionEnableSpecial.setEnabled(True)
+            self._scene_widget.set_special_enabled(self.actionEnableSpecial.isChecked())

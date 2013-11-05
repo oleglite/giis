@@ -3,12 +3,17 @@
 
 import collections
 from PySide.QtGui import QColor
+from PySide.QtCore import QObject, Signal
 
 SceneItem = collections.namedtuple('SceneItem', 'figure algorithm palette')
 
 
-class Scene:
+class Scene(QObject):
+    debug_next_message = Signal(str)
+
     def __init__(self):
+        super(Scene, self).__init__()
+
         self._items = []
         self._context = None
         self.__is_debug = False
@@ -20,6 +25,7 @@ class Scene:
 
     def reset_debug(self):
         self.__debug_steps = 0
+        self.__emited_debug_messages = 0
 
     def debug_next(self):
         self.__debug_steps += 1
@@ -62,6 +68,10 @@ class Scene:
         if not has_alpha:
             self._context.set_draw_color(color)
         for number, pixel in enumerate(algorithm(figure)):
+            if self.__emited_debug_messages < self.__debug_steps and number == self.__emited_debug_messages:
+                self.debug_next_message.emit('draw%s' % str(pixel))
+                self.__emited_debug_messages += 1
+
             if number >= self.__debug_steps:
                 return
             if has_alpha:
