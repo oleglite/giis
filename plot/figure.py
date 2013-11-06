@@ -112,6 +112,19 @@ class Parabola(Figure):
             Figure.set_point(self, tools.Pixel(point.x, self.points[1].y), 1)
 
 
+class Quadrilateral(Figure):
+    POINTS_NUMBER = 4
+    NAME = u'Четырехугольник'
+
+    def edges(self):
+        return (
+            Line([self.points[0], self.points[1]]),
+            Line([self.points[1], self.points[2]]),
+            Line([self.points[2], self.points[3]]),
+            Line([self.points[3], self.points[0]]),
+        )
+
+
 class Curve(Figure):
     POINTS_NUMBER = 4
     NAME = u'Кривая'

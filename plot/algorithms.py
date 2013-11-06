@@ -5,6 +5,7 @@ from plot import figure
 import tools
 import collections
 import reflections
+import itertools
 
 by_name = collections.OrderedDict()
 
@@ -284,3 +285,7 @@ def b_splain_coefs(v0, v1, v2, v3):
     c0 = (v0 + 4 * v1 + v2) / 6.
     return c0, c1, c2, c3
 
+
+@algorithm(u'Четырехугольник', figure.Quadrilateral)
+def quadrilateral(quadr):
+    return itertools.chain(*(bresenham(edge) for edge in quadr.edges()))
