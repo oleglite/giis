@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from qt import *
 from ui.figuredialog import Ui_Dialog
 
 class FigureDialog(QDialog, Ui_Dialog):

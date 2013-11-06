@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from qt import *
 
 
 class NavigatableScrollArea(QScrollArea):

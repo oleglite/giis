@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import collections
-from PySide.QtGui import QColor
-from PySide.QtCore import QObject, Signal
+from qt import QObject, Signal, QColor
 
 SceneItem = collections.namedtuple('SceneItem', 'figure algorithm palette')
 

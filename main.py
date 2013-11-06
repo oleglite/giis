@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from PySide.QtCore import *
-from PySide.QtGui import *
+from qt import *
 
 import gui.window
 

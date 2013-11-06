@@ -1,6 +1,6 @@
 giis
 ====
-Realization of rasterization algorithms in python with PySide.
+Realization of rasterization algorithms in python with Qt.
 
 Done:
  1. Lines
@@ -9,7 +9,7 @@ Done:
   - Xiaolin Wu's line algorithm
  2. Point conics
   - Bresenham's circle algorithm
-  - Algorithm for drawing parabola
+  - Parabola rasterization algorithm
  3. Curves
   - Hermite interpolation for drawing curve
   - Bezier curve

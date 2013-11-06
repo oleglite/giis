@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from qt import *
 from tools import Pixel
 import tools
 

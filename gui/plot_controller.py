@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from PySide.QtCore import *
+from qt import *
 import gui.dialogs
 import plot.figure
 

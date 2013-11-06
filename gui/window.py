@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-from PySide.QtGui import *
+from qt import *
 from plot import algorithms
 from ui.mainwindow import Ui_MainWindow
 
