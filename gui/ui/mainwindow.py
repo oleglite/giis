@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Wed Oct 16 15:20:25 2013
-#      by: pyside-uic 0.2.14 running on PySide 1.1.2
+# Created: Thu Nov  7 10:59:59 2013
+#      by: pyside-uic 0.2.13 running on PySide 1.1.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -37,13 +37,18 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.debugTextBrowser)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 571, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 571, 24))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.toolBar = QtGui.QToolBar(MainWindow)
         self.toolBar.setObjectName("toolBar")
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
         self.statusBar = QtGui.QStatusBar(MainWindow)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.statusBar.sizePolicy().hasHeightForWidth())
+        self.statusBar.setSizePolicy(sizePolicy)
         self.statusBar.setSizeGripEnabled(True)
         self.statusBar.setObjectName("statusBar")
         MainWindow.setStatusBar(self.statusBar)
@@ -88,7 +93,7 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "MainWindow", None, QtGui.QApplication.UnicodeUTF8))
+        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "giis", None, QtGui.QApplication.UnicodeUTF8))
         self.toolBar.setWindowTitle(QtGui.QApplication.translate("MainWindow", "toolBar", None, QtGui.QApplication.UnicodeUTF8))
         self.actionClean.setText(QtGui.QApplication.translate("MainWindow", "clean", None, QtGui.QApplication.UnicodeUTF8))
         self.actionClean.setToolTip(QtGui.QApplication.translate("MainWindow", "Очистить", None, QtGui.QApplication.UnicodeUTF8))

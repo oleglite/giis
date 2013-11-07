@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>giis</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">
@@ -57,7 +57,7 @@
      <x>0</x>
      <y>0</y>
      <width>571</width>
-     <height>21</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>
@@ -79,6 +79,12 @@
    <addaction name="actionNext"/>
   </widget>
   <widget class="QStatusBar" name="statusBar">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <property name="sizeGripEnabled">
     <bool>true</bool>
    </property>
