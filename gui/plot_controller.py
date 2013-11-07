@@ -18,7 +18,6 @@ class SceneController(BaseController):
 
         self._clicks = []
         self._current_algorithm = None
-        self._current_extendible_figure = None
         self._selected_figure = None
 
     def get_algorithm(self):
@@ -47,8 +46,8 @@ class SceneController(BaseController):
         if not self._current_algorithm:
             return
 
-        if self._current_extendible_figure:
-            self._current_extendible_figure.add_point(pixel)
+        if isinstance(self._selected_figure, plot.figure.ExtendibleFigure):
+            self._selected_figure.add_point(pixel)
             return
 
         self._clicks.append(pixel)
@@ -58,7 +57,6 @@ class SceneController(BaseController):
 
     def reset(self):
         self._clicks = []
-        self._current_extendible_figure = None
         self._select_figure()
 
     def _create_figure(self):
@@ -71,8 +69,6 @@ class SceneController(BaseController):
         figure = self._current_algorithm.Figure(self._clicks, params)
         self._scene.append(figure, self._current_algorithm, self._view.look.default_palette)
         self._select_figure(figure)
-        if isinstance(figure, plot.figure.ExtendibleFigure):
-            self._current_extendible_figure = figure
 
         self.debug_log.emit('%s' % (figure))
 
