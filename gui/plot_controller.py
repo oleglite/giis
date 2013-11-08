@@ -3,13 +3,14 @@
 
 from qt import *
 import gui.dialogs
-import plot.figure
+import plot.figure, plot.algorithms, plot.projection
+import tools
 
-class BaseController(QObject):
+
+class SceneController(QObject):
     debug_log = Signal(str)
-
-class SceneController(BaseController):
-    selected_figure_changed = Signal(str)
+    figure_selected = Signal(str)
+    algorithm_changed = Signal(str)
 
     def __init__(self, view, scene):
         super(SceneController, self).__init__()
@@ -20,12 +21,20 @@ class SceneController(BaseController):
         self._current_algorithm = None
         self._selected_figure = None
 
-    def get_algorithm(self):
-        return self._current_algorithm
+        self._figure_builder = plot.figure.FigureBuilder({'scene_size': self._view.scene_size}, 1000)
 
-    def set_algorithm(self, algorithm):
-        self._current_algorithm = algorithm
+        self._scene.debug_next_message.connect(self.debug_log)
+
+    def set_algorithm(self, algorithm_name):
+        self._current_algorithm = plot.algorithms.by_name[algorithm_name]
+
+        message = '%s: %s' % (self._current_algorithm.Figure.NAME, self._current_algorithm.NAME)
+        self.algorithm_changed.emit(message)
+
         self.reset()
+
+    def debug_next(self):
+        self._scene.debug_next()
 
     @property
     def selected_figure(self):
@@ -36,7 +45,7 @@ class SceneController(BaseController):
             return
 
         self._selected_figure = figure
-        self._emit_selected_figure()
+        self.selected_figure_changed()
 
     @property
     def clicks(self):
@@ -51,7 +60,7 @@ class SceneController(BaseController):
             return
 
         self._clicks.append(pixel)
-        if len(self._clicks) == self._current_algorithm.Figure.POINTS_NUMBER:
+        if len(self._clicks) == self._current_algorithm.Figure.INIT_POINTS_NUMBER:
             self._create_figure()
             self._clicks = []
 
@@ -60,21 +69,15 @@ class SceneController(BaseController):
         self._select_figure()
 
     def _create_figure(self):
-        params = gui.dialogs.FigureDialog.request_params(self._current_algorithm.Figure)
-        if params is None:
-            return
-
-        params['scene_size'] = self._view.scene_size
-
-        figure = self._current_algorithm.Figure(self._clicks, params)
+        figure = self._figure_builder.build_figure(self._current_algorithm.Figure, self._clicks)
         self._scene.append(figure, self._current_algorithm, self._view.look.default_palette)
         self._select_figure(figure)
 
         self.debug_log.emit('%s' % (figure))
 
-    def _emit_selected_figure(self):
+    def selected_figure_changed(self):
         description = unicode(self._selected_figure) if self._selected_figure else u''
-        self.selected_figure_changed.emit(description)
+        self.figure_selected.emit(description)
 
 
 class SpecialController(SceneController):
@@ -102,4 +105,4 @@ class SpecialController(SceneController):
         if self._pressed_special:
             pixel = self._view.point_pixel(point)
             self._pressed_special.figure.set_point(pixel, self._pressed_special.point_number)
-        self._emit_selected_figure()
+        self.selected_figure_changed()

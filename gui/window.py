@@ -26,17 +26,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._init_status_bar()
 
         self._init_menus()
-        self._connect_actions()
+        self._connect_signals()
 
     def _init_scene(self):
-        self._scene_widget = plot_view.scene_widget(self.SCENE_SIZE)
+        self._scene_view = plot_view.init_scene(self.SCENE_SIZE)
+        self._scene_controller = self._scene_view.get_controller()
 
     def _init_scroll_area(self):
         scroll_area_widget = scroll_area.NavigatableScrollArea(self)
         scroll_area_widget.resize(self.SCENE_SIZE.width * self.INIT_PIXEL_SIZE,
                                   self.SCENE_SIZE.height * self.INIT_PIXEL_SIZE)
         scroll_area_widget.setBackgroundRole(QPalette.Dark)
-        scroll_area_widget.setWidget(self._scene_widget)
+        scroll_area_widget.setWidget(self._scene_view)
         self.centralwidget.layout().insertWidget(0, scroll_area_widget, 1)
 
     def _init_status_bar(self):
@@ -45,19 +46,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.statusBar.addWidget(self.algorithmLabel)
         self.statusBar.addWidget(self.selectedFigureLabel)
-        self._update_status_bar()
 
     def _change_algorithm(self, action):
         algorithm_name = action.text()
-        new_algorithm = algorithms.by_name[algorithm_name]
-        self._scene_widget.get_controller().set_algorithm(new_algorithm)
-        self._update_status_bar()
-
-    def _update_status_bar(self):
-        algorithm = self._scene_widget.get_controller().get_algorithm()
-        if algorithm:
-            text = '%s: %s' % (algorithm.Figure.NAME, algorithm.NAME)
-            self.algorithmLabel.setText(text)
+        self._scene_controller.set_algorithm(algorithm_name)
 
     def _init_menus(self):
         self.menuBar().addMenu(self._create_draw_menu())
@@ -80,38 +72,35 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         draw_menu.triggered.connect(self._change_algorithm)
         return draw_menu
 
-    def _connect_actions(self):
+    def _connect_signals(self):
         self.actionNext.setEnabled(False)
 
-        self.actionClean.triggered.connect(self._scene_widget.clear_scene)
+        self.actionClean.triggered.connect(self._scene_view.clear_scene)
         self.actionDebug.toggled.connect(self._enable_debug)
-        self.actionNext.triggered.connect(self._scene_widget.scene.debug_next)
-        self.actionNext.triggered.connect(self._scene_widget.repaint)
-        self.actionEnableGrid.toggled.connect(self._scene_widget.set_grid_enabled)
-        self.actionEnableSpecial.toggled.connect(self._scene_widget.set_special_enabled)
+        self.actionNext.triggered.connect(self._scene_controller.debug_next)
+        self.actionNext.triggered.connect(self._scene_view.repaint)
+        self.actionEnableGrid.toggled.connect(self._scene_view.set_grid_enabled)
+        self.actionEnableSpecial.toggled.connect(self._scene_view.set_special_enabled)
 
         self.debugTextBrowser.setVisible(self.actionDebug.isChecked())
-        self._scene_widget.get_controller().debug_log.connect(self._add_debug_message)
-        self._scene_widget.scene.debug_next_message.connect(self._add_debug_message)
-        self._scene_widget.get_controller().selected_figure_changed.connect(self._set_selected_figure_message)
+        self._scene_controller.debug_log.connect(self._add_debug_message)
+        self._scene_controller.figure_selected.connect(self.selectedFigureLabel.setText)
+        self._scene_controller.algorithm_changed.connect(self.algorithmLabel.setText)
 
     def _add_debug_message(self, message):
         prev_text = self.debugTextBrowser.toPlainText()
         self.debugTextBrowser.setText('%s%s\n' % (prev_text, message))
         self.debugTextBrowser.moveCursor(QTextCursor.End)
 
-    def _set_selected_figure_message(self, message):
-        self.selectedFigureLabel.setText(message)
-
     def _enable_debug(self, is_enabled):
-        self._scene_widget.scene.set_debug(is_enabled)
+        self._scene_view.scene.set_debug(is_enabled)
         self.actionNext.setEnabled(is_enabled)
         self.debugTextBrowser.setVisible(is_enabled)
         self.debugTextBrowser.clear()
 
         if is_enabled:
             self.actionEnableSpecial.setEnabled(False)
-            self._scene_widget.set_special_enabled(False)
+            self._scene_view.set_special_enabled(False)
         else:
             self.actionEnableSpecial.setEnabled(True)
-            self._scene_widget.set_special_enabled(self.actionEnableSpecial.isChecked())
+            self._scene_view.set_special_enabled(self.actionEnableSpecial.isChecked())

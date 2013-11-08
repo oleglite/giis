@@ -7,6 +7,7 @@ import time
 Pixel = collections.namedtuple('Pixel', 'x y')
 Size = collections.namedtuple('Size', 'width height')
 SpecialTuple = collections.namedtuple('SpecialTuple', 'center figure point_number')
+Point3D = collections.namedtuple('Point3D', 'x y z w')
 
 
 def sign(number):

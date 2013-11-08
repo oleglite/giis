@@ -289,3 +289,8 @@ def b_splain_coefs(v0, v1, v2, v3):
 @algorithm(u'Четырехугольник', figure.Quadrilateral)
 def quadrilateral(quadr):
     return itertools.chain(*(bresenham(edge) for edge in quadr.edges()))
+
+
+@algorithm(u'Куб', figure.Cube)
+def cube_algogirthm(cube):
+    return itertools.chain(*(bresenham(cube.context.project_line(edge)) for edge in cube.edges()))

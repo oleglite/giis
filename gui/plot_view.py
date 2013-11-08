@@ -21,7 +21,7 @@ class SceneLook:
     special_size = 5
 
 
-def scene_widget(scene_size):
+def init_scene(scene_size):
     from plot.scene import Scene
     from plot_controller import SpecialController
 

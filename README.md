@@ -14,3 +14,5 @@ Done:
   - Hermite interpolation for drawing curve
   - Bezier curve
   - B-spline
+ 4. Cube
+  - Perspective projection
