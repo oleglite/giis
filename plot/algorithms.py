@@ -22,9 +22,9 @@ def algorithm(name, figure_cls, alpha=False):
 
 @algorithm(name=u'ЦДА', figure_cls=figure.Line)
 def DDA(figure):
-    point1, point2 = figure.points
-    x1, y1 = point1.x, point1.y
-    x2, y2 = point2.x, point2.y
+    pixel1, pixel2 = figure.pixels
+    x1, y1 = pixel1.x, pixel1.y
+    x2, y2 = pixel2.x, pixel2.y
 
     length = max(abs(x2 - x1), abs(y2 - y1))
     if length <= 0:
@@ -44,9 +44,9 @@ def DDA(figure):
 
 @algorithm(name=u'Алгоритм Брезенхема', figure_cls=figure.Line)
 def bresenham(figure):
-    point1, point2 = figure.points
-    x1, y1 = point1.x, point1.y
-    x2, y2 = point2.x, point2.y
+    pixel1, pixel2 = figure.pixels
+    x1, y1 = pixel1.x, pixel1.y
+    x2, y2 = pixel2.x, pixel2.y
     dx = abs(x2 - x1)
     dy = abs(y2 - y1)
     signX = 1 if x1 < x2 else -1
@@ -66,9 +66,9 @@ def bresenham(figure):
 
 @algorithm(name=u'Алгоритм Ву', figure_cls=figure.Line, alpha=True)
 def wu(figure):
-    point1, point2 = figure.points
-    x1, y1 = point1.x, point1.y
-    x2, y2 = point2.x, point2.y
+    pixel1, pixel2 = figure.pixels
+    x1, y1 = pixel1.x, pixel1.y
+    x2, y2 = pixel2.x, pixel2.y
     dx = abs(x2 - x1)
     dy = abs(y2 - y1)
     signX = 1 if x1 < x2 else -1
@@ -106,16 +106,16 @@ def wu(figure):
 @algorithm(name=u'Алгоритм Брезенхема для окружности', figure_cls=figure.Circle)
 def bresenham_circle(circle):
     reflector = reflections.Reflector()
-    h_line = figure.Line([circle.points[0], tools.Pixel(circle.x0 + circle.R, circle.y0)])
+    h_line = figure.Line([circle.pixels[0], tools.Pixel(circle.x0 + circle.R, circle.y0)])
     reflector.add_reflection(reflections.LineReflection(h_line))
-    reflector.add_reflection(reflections.PointReflection(circle.points[0]))
+    reflector.add_reflection(reflections.PointReflection(circle.pixels[0]))
 
     x, y = 0, circle.R
     di = 0
 
     while y >= 0:
-        for point in reflector.reflect(x + circle.x0, int(y) + circle.y0):
-            yield point
+        for pixel in reflector.reflect(x + circle.x0, int(y) + circle.y0):
+            yield pixel
 
         h_incr = 2 * x + 1
         v_incr = -2 * y + 1
@@ -150,8 +150,8 @@ def bresenham_circle(circle):
 
 @algorithm(name=u'Парабола', figure_cls=figure.Parabola)
 def bres_like_parabola(parabola):
-    x1, y1 = parabola.points[0]
-    x2, y2 = parabola.points[1]
+    x1, y1 = parabola.pixels[0]
+    x2, y2 = parabola.pixels[1]
 
     p = abs(x1 - x2)
     increment = tools.sign(x1 - x2)
@@ -200,15 +200,15 @@ def bres_like_parabola(parabola):
         yield x, y0 + y
         yield x, y0 - y
 
-def count_steps(points):
-    return tools.max_diff([point.x for point in points]) + tools.max_diff([point.y for point in points])
+def count_steps(pixels):
+    return tools.max_diff([pixel.x for pixel in pixels]) + tools.max_diff([pixel.y for pixel in pixels])
 
 @algorithm(u'Метод Эрмита', figure.Curve)
 def ermit_curve(curve):
-    p1x, p1y = curve.points[0]
-    p4x, p4y = curve.points[1]
-    r1x, r1y = curve.points[2]
-    r4x, r4y = curve.points[3]
+    p1x, p1y = curve.pixels[0]
+    p4x, p4y = curve.pixels[1]
+    r1x, r1y = curve.pixels[2]
+    r4x, r4y = curve.pixels[3]
 
     r1x -= p1x
     r1y -= p1y
@@ -216,7 +216,7 @@ def ermit_curve(curve):
     r4y -= p4y
 
     t = 0.0
-    steps_number = count_steps(curve.points)
+    steps_number = count_steps(curve.pixels)
     t_incr = 1.0 / (steps_number + 1)
 
     while t <= 1.0:
@@ -237,13 +237,13 @@ def ermit_curve(curve):
 
 @algorithm(u'Кривая Безье', figure.Curve)
 def bezier_curve(curve):
-    p1x, p1y = curve.points[0]
-    p4x, p4y = curve.points[1]
-    p2x, p2y = curve.points[2]
-    p3x, p3y = curve.points[3]
+    p1x, p1y = curve.pixels[0]
+    p4x, p4y = curve.pixels[1]
+    p2x, p2y = curve.pixels[2]
+    p3x, p3y = curve.pixels[3]
 
     t = 0.0
-    steps_number = count_steps(curve.points)
+    steps_number = count_steps(curve.pixels)
     t_incr = 1.0 / ((steps_number + 1) * 2)
 
     while t <= 1.0:
@@ -262,7 +262,7 @@ def bezier_curve(curve):
 
 @algorithm(u'B-сплайн', figure.ExtendibleCurve)
 def b_splain(curve):
-    for p0, p1, p2, p3 in tools.ntuples(curve.points, 4):
+    for p0, p1, p2, p3 in tools.ntuples(curve.pixels, 4):
         a0, a1, a2, a3 = b_splain_coefs(p0.x, p1.x, p2.x, p3.x)
         b0, b1, b2, b3 = b_splain_coefs(p0.y, p1.y, p2.y, p3.y)
 

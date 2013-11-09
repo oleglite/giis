@@ -9,7 +9,7 @@ class Projector(object):
         self._k = k
 
     def point(self, x, y, z, w=1.0):
-        return tools.Point3D(x, y, z + self._k, w)
+        return tools.Point(x, y, z + self._k, w)
 
     def project_point(self, point):
         x0, y0, z0, w0 = point
@@ -19,6 +19,6 @@ class Projector(object):
 
     def project_line(self, line):
         return figure.Line([
-            self.project_point(line.points[0]),
-            self.project_point(line.points[1]),
+            self.project_point(line.pixels[0]),
+            self.project_point(line.pixels[1]),
         ])

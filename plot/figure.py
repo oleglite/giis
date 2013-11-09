@@ -15,125 +15,125 @@ class FigureBuilder:
         self._figure_params = figure_params
         self._projector = projection.Projector(k)
 
-    def build_figure(self, figure_cls, points):
+    def build_figure(self, figure_cls, pixels):
         if issubclass(figure_cls, Figure3D):
-            figure = figure_cls(points, self._projector)
+            figure = figure_cls(pixels, self._projector)
         else:
-            figure = figure_cls(points, self._figure_params)
+            figure = figure_cls(pixels, self._figure_params)
         return figure
 
 
 class Figure(object):
-    INIT_POINTS_NUMBER = 1
+    INIT_PIXELS_NUMBER = 1
     NAME = u'Figure'
     REQUIRED_PARAMS = []
 
-    def __init__(self, points, params={}):
-        if len(points) != self.INIT_POINTS_NUMBER:
-            raise FigureException('Expected %i points' % self.INIT_POINTS_NUMBER)
+    def __init__(self, pixels, params={}):
+        if len(pixels) != self.INIT_PIXELS_NUMBER:
+            raise FigureException('Expected %i pixels' % self.INIT_PIXELS_NUMBER)
 
         for param in self.REQUIRED_PARAMS:
             if param not in params:
                 raise FigureException('Required %r param' % param)
 
         self._params = params
-        self._points = points
+        self._pixels = pixels
 
     def __str__(self):
         if self.REQUIRED_PARAMS:
             params = list(tools.filtered_items(self._params, self.REQUIRED_PARAMS))
-            return '%s(%r, %r)' % (self.NAME, self._points, params)
+            return '%s(%r, %r)' % (self.NAME, self._pixels, params)
         else:
-            return '%s(%r)' % (self.NAME, self._points)
+            return '%s(%r)' % (self.NAME, self._pixels)
 
     @property
-    def points(self):
-        return self._points
+    def pixels(self):
+        return self._pixels
 
     @property
     def params(self):
         return self._params
 
-    def set_point(self, point, point_number):
-        self._points[point_number] = point
+    def set_pixel(self, pixel, pixel_number):
+        self._pixels[pixel_number] = pixel
 
     def _move_figure(self, dx, dy):
-        for point_number, point in enumerate(self._points):
-            self._points[point_number] = tools.Pixel(point.x + dx, point.y + dy)
+        for pixel_number, pixel in enumerate(self._pixels):
+            self._pixels[pixel_number] = tools.Pixel(pixel.x + dx, pixel.y + dy)
 
 
 class ExtendibleFigure(Figure):
-    def add_point(self, point):
-        self._points.append(point)
+    def add_pixel(self, pixel):
+        self._pixels.append(pixel)
 
 
 class Line(Figure):
-    INIT_POINTS_NUMBER = 2
+    INIT_PIXELS_NUMBER = 2
     NAME = u'Отрезок'
 
 
 class Circle(Figure):
-    INIT_POINTS_NUMBER = 2
+    INIT_PIXELS_NUMBER = 2
     NAME = u'Окружность'
 
-    def __init__(self, points, params={}):
-        super(Circle, self).__init__(points, params)
+    def __init__(self, pixels, params={}):
+        super(Circle, self).__init__(pixels, params)
         self.__update()
 
-    def set_point(self, point, number):
-        assert 0 <= number < self.INIT_POINTS_NUMBER
+    def set_pixel(self, pixel, number):
+        assert 0 <= number < self.INIT_PIXELS_NUMBER
 
         if number == 0:
-            dx = point.x - self._points[0].x
-            dy = point.y - self._points[0].y
+            dx = pixel.x - self._pixels[0].x
+            dy = pixel.y - self._pixels[0].y
             self._move_figure(dx, dy)
         else:
-            super(Circle, self).set_point(point, number)
+            super(Circle, self).set_pixel(pixel, number)
         self.__update()
 
     def __update(self):
-        self.x0, self.y0 = self._points[0]
-        p = self._points[1]
+        self.x0, self.y0 = self._pixels[0]
+        p = self._pixels[1]
         self.R = ((p.x - self.x0) ** 2 + (p.y - self.y0) ** 2) ** 0.5
 
     def __str__(self):
-        return '%s(O=%s, R=%.2f)' % (self.NAME, self._points[0], self.R)
+        return '%s(O=%s, R=%.2f)' % (self.NAME, self._pixels[0], self.R)
 
 
 class Parabola(Figure):
-    INIT_POINTS_NUMBER = 2
+    INIT_PIXELS_NUMBER = 2
     NAME = u'Парабола'
 
-    def __init__(self, points, params={}):
-        points[1] = tools.Pixel(points[1].x, points[0].y)
-        super(Parabola, self).__init__(points, params)
+    def __init__(self, pixels, params={}):
+        pixels[1] = tools.Pixel(pixels[1].x, pixels[0].y)
+        super(Parabola, self).__init__(pixels, params)
 
-    def set_point(self, point, number):
-        assert 0 <= number < self.INIT_POINTS_NUMBER
+    def set_pixel(self, pixel, number):
+        assert 0 <= number < self.INIT_PIXELS_NUMBER
 
         if number == 0:
-            dx = point.x - self._points[0].x
-            dy = point.y - self._points[0].y
+            dx = pixel.x - self._pixels[0].x
+            dy = pixel.y - self._pixels[0].y
             self._move_figure(dx, dy)
         else:
-            Figure.set_point(self, tools.Pixel(point.x, self.points[1].y), 1)
+            Figure.set_pixel(self, tools.Pixel(pixel.x, self.pixels[1].y), 1)
 
 
 class Quadrilateral(Figure):
-    INIT_POINTS_NUMBER = 4
+    INIT_PIXELS_NUMBER = 4
     NAME = u'Четырехугольник'
 
     def edges(self):
         return (
-            Line([self._points[0], self._points[1]]),
-            Line([self._points[1], self._points[2]]),
-            Line([self._points[2], self._points[3]]),
-            Line([self._points[3], self._points[0]]),
+            Line([self._pixels[0], self._pixels[1]]),
+            Line([self._pixels[1], self._pixels[2]]),
+            Line([self._pixels[2], self._pixels[3]]),
+            Line([self._pixels[3], self._pixels[0]]),
         )
 
 
 class Curve(Figure):
-    INIT_POINTS_NUMBER = 4
+    INIT_PIXELS_NUMBER = 4
     NAME = u'Кривая'
 
 
@@ -142,34 +142,34 @@ class ExtendibleCurve(Curve, ExtendibleFigure):
 
 
 class Figure3D(Figure):
-    def __init__(self, points, context):
-        super(Figure3D, self).__init__(points, {})
+    def __init__(self, pixels, context):
+        super(Figure3D, self).__init__(pixels, {})
 
         self.context = context
-        self._make_3d_points()
+        self._make_points()
 
-    def _make_3d_points(self):
+    def _make_points(self):
         raise NotImplementedError()
 
-    def set_point(self, point, point_number):
-        self._points[point_number] = point
-        self._make_3d_points()
+    def set_pixel(self, pixel, pixel_number):
+        self._pixels[pixel_number] = pixel
+        self._make_points()
 
 
 class Cube(Figure3D):
-    INIT_POINTS_NUMBER = 2
+    INIT_PIXELS_NUMBER = 2
     NAME = u'Куб'
 
-    def __init__(self, points, context):
-        super(Cube, self).__init__(points, context)
-        self.set_point(points[1], 1)  # correct second point position on init
+    def __init__(self, pixels, context):
+        super(Cube, self).__init__(pixels, context)
+        self.set_pixel(pixels[1], 1)  # correct second pixel position on init
 
-    def _make_3d_points(self):
-        self._size = abs(self.points[0].x - self.points[1].x)
-        x0, y0 = self.points[0]
+    def _make_points(self):
+        self._size = abs(self._pixels[0].x - self._pixels[1].x)
+        x0, y0 = self._pixels[0]
         size = self._size
 
-        self._points3d = [
+        self._points = [
             self.context.point(x0, y0, 0),
             self.context.point(x0 + size, y0, 0),
             self.context.point(x0 + size, y0 + size, 0),
@@ -181,32 +181,32 @@ class Cube(Figure3D):
             self.context.point(x0, y0 + size, size),
         ]
 
-    def set_point(self, point, point_number):
-        if point_number == 0:
-            dx = point.x - self._points[point_number].x
-            dy = point.y - self._points[point_number].y
+    def set_pixel(self, pixel, pixel_number):
+        if pixel_number == 0:
+            dx = pixel.x - self._pixels[pixel_number].x
+            dy = pixel.y - self._pixels[pixel_number].y
             self._move_figure(dx, dy)
         else:
-            if point.x > self.points[0].x:
-                Figure.set_point(self, tools.Pixel(point.x, self.points[0].y), 1)
+            if pixel.x > self.pixels[0].x:
+                Figure.set_pixel(self, tools.Pixel(pixel.x, self.pixels[0].y), 1)
 
-        self._make_3d_points()
+        self._make_points()
 
     def edges(self):
         return (
-            Line([self._points3d[0], self._points3d[1]]),
-            Line([self._points3d[1], self._points3d[2]]),
-            Line([self._points3d[2], self._points3d[3]]),
-            Line([self._points3d[3], self._points3d[0]]),
+            Line([self._points[0], self._points[1]]),
+            Line([self._points[1], self._points[2]]),
+            Line([self._points[2], self._points[3]]),
+            Line([self._points[3], self._points[0]]),
 
-            Line([self._points3d[1], self._points3d[5]]),
-            Line([self._points3d[2], self._points3d[6]]),
+            Line([self._points[1], self._points[5]]),
+            Line([self._points[2], self._points[6]]),
 
-            Line([self._points3d[4], self._points3d[5]]),
-            Line([self._points3d[5], self._points3d[6]]),
-            Line([self._points3d[6], self._points3d[7]]),
-            Line([self._points3d[7], self._points3d[4]]),
+            Line([self._points[4], self._points[5]]),
+            Line([self._points[5], self._points[6]]),
+            Line([self._points[6], self._points[7]]),
+            Line([self._points[7], self._points[4]]),
 
-            Line([self._points3d[0], self._points3d[4]]),
-            Line([self._points3d[3], self._points3d[7]]),
+            Line([self._points[0], self._points[4]]),
+            Line([self._points[3], self._points[7]]),
         )

@@ -210,7 +210,7 @@ class SceneView(QWidget):
             brush = self._look.selected_special_brush if figure is selected_figure else self._look.special_brush
             self._painter.setBrush(brush)
 
-            for i, pixel in enumerate(figure.points):
+            for i, pixel in enumerate(figure.pixels):
                 rect = self._pixel_rect(pixel.x, pixel.y)
                 center = QPointF(rect.x() + rect.width() / 2., rect.y() + rect.height() / 2.)
                 radius = self._look.special_size

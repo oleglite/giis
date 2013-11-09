@@ -56,11 +56,11 @@ class SceneController(QObject):
             return
 
         if isinstance(self._selected_figure, plot.figure.ExtendibleFigure):
-            self._selected_figure.add_point(pixel)
+            self._selected_figure.add_pixel(pixel)
             return
 
         self._clicks.append(pixel)
-        if len(self._clicks) == self._current_algorithm.Figure.INIT_POINTS_NUMBER:
+        if len(self._clicks) == self._current_algorithm.Figure.INIT_PIXELS_NUMBER:
             self._create_figure()
             self._clicks = []
 
@@ -104,5 +104,5 @@ class SpecialController(SceneController):
     def move(self, point):
         if self._pressed_special:
             pixel = self._view.point_pixel(point)
-            self._pressed_special.figure.set_point(pixel, self._pressed_special.point_number)
+            self._pressed_special.figure.set_pixel(pixel, self._pressed_special.pixel_number)
         self.selected_figure_changed()

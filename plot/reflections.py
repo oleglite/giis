@@ -63,8 +63,8 @@ class LineReflection:
         self._line = line
 
     def reflect(self, pixel):
-        xa, ya = self._line.points[0]
-        xb, yb = self._line.points[1]
+        xa, ya = self._line.pixels[0]
+        xb, yb = self._line.pixels[1]
         xp, yp = pixel
 
         if xa == xb:
