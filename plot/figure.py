@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tools
-import projection
+import projection, transform
 
 class FigureException(Exception): pass
 
@@ -150,24 +150,34 @@ class Figure3D(Figure):
         super(Figure3D, self).__init__(pixels, {})
 
         self.context = context
+        self._transform = transform.Transform()
+
+        self._points = []
+        self._transformed_points = []
+
         self._make_points()
 
     def _make_points(self):
-        self._points = []
+        raise NotImplementedError()
+
+    def center(self):
+        raise NotImplementedError()
 
     @property
     def points(self):
-        return self._points
-
-    def set_point(self, point, point_number):
-        self._points[point_number] = point
+        return self._transformed_points
 
     def set_pixel(self, pixel, pixel_number):
         self._pixels[pixel_number] = pixel
         self._make_points()
+        self._update_transformed_points()
 
-    def center(self):
-        raise NotImplementedError()
+    def apply_matrix(self, matrix):
+        self._transform.apply_matrix(matrix)
+        self._update_transformed_points()
+
+    def _update_transformed_points(self):
+        self._transformed_points = [self._transform.transform_point(point) for point in self._points]
 
 
 class Cube(Figure3D):
@@ -205,29 +215,33 @@ class Cube(Figure3D):
                 Figure.set_pixel(self, tools.Pixel(pixel.x, self.pixels[0].y), 1)
 
         self._make_points()
+        self._update_transformed_points()
 
     def edges(self):
+        points = self.points
         return (
-            Line([self._points[0], self._points[1]]),
-            Line([self._points[1], self._points[2]]),
-            Line([self._points[2], self._points[3]]),
-            Line([self._points[3], self._points[0]]),
+            Line([points[0], points[1]]),
+            Line([points[1], points[2]]),
+            Line([points[2], points[3]]),
+            Line([points[3], points[0]]),
 
-            Line([self._points[1], self._points[5]]),
-            Line([self._points[2], self._points[6]]),
+            Line([points[1], points[5]]),
+            Line([points[2], points[6]]),
 
-            Line([self._points[4], self._points[5]]),
-            Line([self._points[5], self._points[6]]),
-            Line([self._points[6], self._points[7]]),
-            Line([self._points[7], self._points[4]]),
+            Line([points[4], points[5]]),
+            Line([points[5], points[6]]),
+            Line([points[6], points[7]]),
+            Line([points[7], points[4]]),
 
-            Line([self._points[0], self._points[4]]),
-            Line([self._points[3], self._points[7]]),
+            Line([points[0], points[4]]),
+            Line([points[3], points[7]]),
         )
 
     def center(self):
-        x0, y0, z0, w0 = self._points[0]
-        return tools.Point(x0 + self._size / 2,
-                           y0 + self._size / 2,
-                           z0 + self._size / 2,
-                           w0)
+        points = self.points
+        return tools.Point(
+            tools.middle(points[0].x, points[6].x),
+            tools.middle(points[0].y, points[6].y),
+            tools.middle(points[0].z, points[6].z),
+            1.0
+        )

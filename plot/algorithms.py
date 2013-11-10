@@ -293,5 +293,4 @@ def quadrilateral(quadr):
 
 @algorithm(u'Куб', figure.Cube)
 def cube_algogirthm(cube):
-    print 'cube_algogirthm'
     return itertools.chain(*(bresenham(cube.context.project_line(edge)) for edge in cube.edges()))

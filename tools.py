@@ -102,3 +102,7 @@ def ntuples(lst, n):
     [(1, 2, 3), (2, 3, 4), (3, 4, 5)]
     """
     return zip(*(lst[i:] + lst[:i] for i in xrange(n)))[:len(lst) - n + 1]
+
+def middle(x1, x2):
+    " return float middle between coordinates x1 and x2 "
+    return (x1 + x2) / 2.

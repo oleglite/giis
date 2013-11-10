@@ -7,6 +7,30 @@ import plot.figure, plot.algorithms, plot.projection
 from plot import transform
 import tools
 
+tf = transform
+
+keys_bindings = dict(
+    ROTATE_X_POS = (Qt.Key_Down, Qt.NoModifier),
+    ROTATE_X_NEG = (Qt.Key_Up, Qt.NoModifier),
+    ROTATE_Y_POS = (Qt.Key_Left, Qt.NoModifier),
+    ROTATE_Y_NEG = (Qt.Key_Right, Qt.NoModifier),
+    ROTATE_Z_POS = (Qt.Key_Right, Qt.ControlModifier),
+    ROTATE_Z_NEG = (Qt.Key_Left, Qt.ControlModifier),
+
+    MOVE_X_POS = (Qt.Key_Right, Qt.ShiftModifier),
+    MOVE_X_NEG = (Qt.Key_Left, Qt.ShiftModifier),
+    MOVE_Y_POS = (Qt.Key_Down, Qt.ShiftModifier),
+    MOVE_Y_NEG = (Qt.Key_Up, Qt.ShiftModifier),
+    MOVE_Z_POS = (Qt.Key_Up, Qt.ControlModifier),
+    MOVE_Z_NEG = (Qt.Key_Down, Qt.ControlModifier),
+
+    SCALE_X_POS = (Qt.Key_D, Qt.NoModifier),
+    SCALE_X_NEG = (Qt.Key_A, Qt.NoModifier),
+    SCALE_Y_POS = (Qt.Key_W, Qt.NoModifier),
+    SCALE_Y_NEG = (Qt.Key_S, Qt.NoModifier),
+    SCALE_Z_POS = (Qt.Key_E, Qt.NoModifier),
+    SCALE_Z_NEG = (Qt.Key_Q, Qt.NoModifier),
+)
 
 class SceneController(QObject):
     debug_log = Signal(str)
@@ -115,16 +139,18 @@ class SpecialController(SceneController):
 
 
 class Figure3DController(SpecialController):
+
+
     def __init__(self, view, scene):
         super(Figure3DController, self).__init__(view, scene)
-        self._transofrmator = transform.Transformator()
+        self._transofrmator = transform.FigureTransformator()
 
-    def key_pressed(self, key, modifiers):
+    def key_pressed(self, pressed_key, pressed_modifiers):
         if plot.figure.is_3d_figure(self._selected_figure):
-            if key == Qt.Key_Right:
-                print 'right'
-                self._transofrmator.rotate(self._selected_figure,
-                                           transform.POSITIVE,
-                                           transform.AXIS_Z)
+            for transform_shortcut in keys_bindings:
+                key, modifiers = keys_bindings[transform_shortcut]
+                if pressed_key == key and modifiers == pressed_modifiers:
+                    self._transofrmator.transform(self._selected_figure, transform_shortcut)
+                    break
 
-        super(Figure3DController, self).key_pressed(key, modifiers)
+        super(Figure3DController, self).key_pressed(pressed_key, pressed_modifiers)
