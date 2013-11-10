@@ -23,11 +23,11 @@ class SceneLook:
 
 def init_scene(scene_size):
     from plot.scene import Scene
-    from plot_controller import SpecialController
+    from plot_controller import Figure3DController
 
     scene = Scene()
     view = SceneView(scene, scene_size)
-    controller = SpecialController(view, scene)
+    controller = Figure3DController(view, scene)
 
     view.set_controller(controller)
 
@@ -120,9 +120,8 @@ class SceneView(QWidget):
         super(SceneView, self).mouseMoveEvent(event)
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Escape and self._controller:
-            self._controller.reset()
-            self.repaint()
+        if self._controller:
+            self._controller.key_pressed(event.key(), event.modifiers())
 
     def grid_enabled(self):
         if self._pixel_size < self.MIN_PIXEL_SIZE_GRID_ENABLED:

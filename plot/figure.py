@@ -6,6 +6,10 @@ import projection
 
 class FigureException(Exception): pass
 
+
+def is_3d_figure(figure):
+    return isinstance(figure, Figure3D)
+
 class FigureBuilder:
     def __init__(self, figure_params, k):
         """
@@ -149,11 +153,21 @@ class Figure3D(Figure):
         self._make_points()
 
     def _make_points(self):
-        raise NotImplementedError()
+        self._points = []
+
+    @property
+    def points(self):
+        return self._points
+
+    def set_point(self, point, point_number):
+        self._points[point_number] = point
 
     def set_pixel(self, pixel, pixel_number):
         self._pixels[pixel_number] = pixel
         self._make_points()
+
+    def center(self):
+        raise NotImplementedError()
 
 
 class Cube(Figure3D):
@@ -210,3 +224,10 @@ class Cube(Figure3D):
             Line([self._points[0], self._points[4]]),
             Line([self._points[3], self._points[7]]),
         )
+
+    def center(self):
+        x0, y0, z0, w0 = self._points[0]
+        return tools.Point(x0 + self._size / 2,
+                           y0 + self._size / 2,
+                           z0 + self._size / 2,
+                           w0)

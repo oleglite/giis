@@ -4,6 +4,7 @@
 from qt import *
 import gui.dialogs
 import plot.figure, plot.algorithms, plot.projection
+from plot import transform
 import tools
 
 
@@ -79,6 +80,11 @@ class SceneController(QObject):
         description = unicode(self._selected_figure) if self._selected_figure else u''
         self.figure_selected.emit(description)
 
+    def key_pressed(self, key, modifiers):
+        if key == Qt.Key_Escape:
+            self.reset()
+        self._view.repaint()
+
 
 class SpecialController(SceneController):
     def __init__(self, view, scene):
@@ -106,3 +112,19 @@ class SpecialController(SceneController):
             pixel = self._view.point_pixel(point)
             self._pressed_special.figure.set_pixel(pixel, self._pressed_special.pixel_number)
         self.selected_figure_changed()
+
+
+class Figure3DController(SpecialController):
+    def __init__(self, view, scene):
+        super(Figure3DController, self).__init__(view, scene)
+        self._transofrmator = transform.Transformator()
+
+    def key_pressed(self, key, modifiers):
+        if plot.figure.is_3d_figure(self._selected_figure):
+            if key == Qt.Key_Right:
+                print 'right'
+                self._transofrmator.rotate(self._selected_figure,
+                                           transform.POSITIVE,
+                                           transform.AXIS_Z)
+
+        super(Figure3DController, self).key_pressed(key, modifiers)
