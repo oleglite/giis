@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import tools, figure
+import tools
+import figure
 
 
 class Projector(object):

@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import numpy as np
-from numpy import linalg
 from math import sin, cos
+
+import numpy
+from numpy import linalg
 
 import tools
 
@@ -105,7 +106,7 @@ class FigureTransformator(object):
 
 class Transform(object):
     def __init__(self, *matrixes):
-        self._M = np.matrix(np.identity(4))
+        self._M = numpy.matrix(numpy.identity(4))
         for matrix in matrixes:
             self._M *= matrix
 
@@ -113,7 +114,7 @@ class Transform(object):
         self._M *= matrix
 
     def transform_point(self, point):
-        res = np.matrix(point) * self._M
+        res = numpy.matrix(point) * self._M
         res /= res[0, 3]
         coodrinates = [tools.rounded_int(coord) for coord in res.tolist()[0]]
         return tools.Point(*coodrinates)
@@ -121,7 +122,7 @@ class Transform(object):
 
 def T(dx, dy, dz):
     """ Transference """
-    return np.matrix([
+    return numpy.matrix([
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
@@ -130,7 +131,7 @@ def T(dx, dy, dz):
 
 def S(sx, sy, sz):
     """ Scale """
-    return np.matrix([
+    return numpy.matrix([
         [sx, 0, 0, 0],
         [0, sy, 0, 0],
         [0, 0, sz, 0],
@@ -140,7 +141,7 @@ def S(sx, sy, sz):
 def Rx(q):
     """ Rotation around x axis"""
     sin_q, cos_q = sin(q), cos(q)
-    return np.matrix([
+    return numpy.matrix([
         [1, 0, 0, 0],
         [0, cos_q, sin_q, 0],
         [0, -sin_q, cos_q, 0],
@@ -150,7 +151,7 @@ def Rx(q):
 def Ry(q):
     """ Rotation around y axis"""
     sin_q, cos_q = sin(q), cos(q)
-    return np.matrix([
+    return numpy.matrix([
         [cos_q, 0, -sin_q, 0],
         [0, 1, 0, 0],
         [sin_q, 0, cos_q, 0],
@@ -160,7 +161,7 @@ def Ry(q):
 def Rz(q):
     """ Rotation around z axis"""
     sin_q, cos_q = sin(q), cos(q)
-    return np.matrix([
+    return numpy.matrix([
         [cos_q, sin_q, 0, 0],
         [-sin_q, cos_q, 0, 0],
         [0, 0, 1, 0],

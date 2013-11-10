@@ -3,18 +3,17 @@
 
 
 from qt import *
-from plot import algorithms
-from ui.mainwindow import Ui_MainWindow
 
+import tools
 import scroll_area
 import plot_view
-from tools import Size
+import plot.algorithms
+from ui.mainwindow import Ui_MainWindow
 
-import gui.dialogs, plot.figure
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     INIT_PIXEL_SIZE = 16
-    SCENE_SIZE = Size(1000, 800)
+    SCENE_SIZE = tools.Size(1000, 800)
     DRAW_MENU_TITLE = u'Нарисовать'
 
     def __init__(self):
@@ -59,7 +58,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         figure_menus = {}
 
-        for name, algorithm in algorithms.by_name.iteritems():
+        for name, algorithm in plot.algorithms.by_name.iteritems():
             if algorithm.Figure not in figure_menus:
                 figure_menu = QMenu(algorithm.Figure.NAME)
                 figure_menus[algorithm.Figure] = figure_menu

@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from plot import figure
+
+import itertools
+import collections
 
 import tools
-import collections
 import reflections
-import itertools
+from plot import figure
+
 
 by_name = collections.OrderedDict()
 

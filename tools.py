@@ -4,6 +4,7 @@
 import collections
 import time
 
+
 Pixel = collections.namedtuple('Pixel', 'x y')
 Size = collections.namedtuple('Size', 'width height')
 SpecialTuple = collections.namedtuple('SpecialTuple', 'center figure pixel_number')

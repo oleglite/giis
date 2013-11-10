@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from qt import *
+
 from ui.figuredialog import Ui_Dialog
+
 
 class FigureDialog(QDialog, Ui_Dialog):
     DIALOG_TEXT = u'Введите параметры:'

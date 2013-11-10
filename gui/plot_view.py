@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from qt import *
-from tools import Pixel
+
 import tools
 
 
@@ -158,7 +158,7 @@ class SceneView(QWidget):
         pixel_x = tools.place_between(pixel_x, 0, self._scene_size.width - 1)
         pixel_y = tools.place_between(pixel_y, 0, self._scene_size.height - 1)
 
-        return Pixel(int(pixel_x), int(pixel_y))
+        return tools.Pixel(int(pixel_x), int(pixel_y))
 
     def _pixel_rect(self, x, y):
         return QRectF(x * self._pixel_size, y * self._pixel_size,

@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import tools
-import projection, transform
+import projection
+import transform
 
 class FigureException(Exception): pass
 

@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import collections
+
 from qt import QObject, Signal, QColor
+
 
 SceneItem = collections.namedtuple('SceneItem', 'figure algorithm palette')
 

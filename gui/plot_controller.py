@@ -2,14 +2,13 @@
 # -*- coding: utf-8 -*-
 
 from qt import *
-import gui.dialogs
-import plot.figure, plot.algorithms, plot.projection
-from plot import transform
-import tools
 
-tf = transform
+import plot.figure
+import plot.algorithms
+import plot.transform
 
-keys_bindings = dict(
+
+KEYS_BINDINGS = dict(
     ROTATE_X_POS = (Qt.Key_Down, Qt.NoModifier),
     ROTATE_X_NEG = (Qt.Key_Up, Qt.NoModifier),
     ROTATE_Y_POS = (Qt.Key_Left, Qt.NoModifier),
@@ -143,12 +142,12 @@ class Figure3DController(SpecialController):
 
     def __init__(self, view, scene):
         super(Figure3DController, self).__init__(view, scene)
-        self._transofrmator = transform.FigureTransformator()
+        self._transofrmator = plot.transform.FigureTransformator()
 
     def key_pressed(self, pressed_key, pressed_modifiers):
         if plot.figure.is_3d_figure(self._selected_figure):
-            for transform_shortcut in keys_bindings:
-                key, modifiers = keys_bindings[transform_shortcut]
+            for transform_shortcut in KEYS_BINDINGS:
+                key, modifiers = KEYS_BINDINGS[transform_shortcut]
                 if pressed_key == key and modifiers == pressed_modifiers:
                     self._transofrmator.transform(self._selected_figure, transform_shortcut)
                     break
