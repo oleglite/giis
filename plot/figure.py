@@ -171,10 +171,14 @@ class Figure3D(Figure):
     def set_pixel(self, pixel, pixel_number):
         self._pixels[pixel_number] = pixel
         self._make_points()
-        self._update_transformed_points()
+        self._reset_transform()
 
     def apply_matrix(self, matrix):
         self._transform.apply_matrix(matrix)
+        self._update_transformed_points()
+
+    def _reset_transform(self):
+        self._transform = transform.Transform()
         self._update_transformed_points()
 
     def _update_transformed_points(self):
@@ -216,7 +220,7 @@ class Cube(Figure3D):
                 Figure.set_pixel(self, tools.Pixel(pixel.x, self.pixels[0].y), 1)
 
         self._make_points()
-        self._update_transformed_points()
+        self._reset_transform()
 
     def edges(self):
         points = self.points

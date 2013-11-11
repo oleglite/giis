@@ -18,7 +18,7 @@ AXIS_Z = 'AXIS_Z'
 POSITIVE = 'DIRECTION_POSITIVE'
 NEGATIVE = 'DIRECTION_NEGATIVE'
 
-transform_shortcuts = dict(
+TRANSFORM_SHORTCUTS = dict(
     ROTATE_X_POS = (ROTATE, POSITIVE, AXIS_X),
     ROTATE_X_NEG = (ROTATE, NEGATIVE, AXIS_X),
     ROTATE_Y_POS = (ROTATE, POSITIVE, AXIS_Y),
@@ -88,7 +88,7 @@ class FigureTransformator(object):
         }
 
     def transform(self, figure, shortcut):
-        transform, direction, axis = transform_shortcuts[shortcut]
+        transform, direction, axis = TRANSFORM_SHORTCUTS[shortcut]
         transform_matrix = self._transforms[transform][direction][axis]
 
         if transform == MOVE:
@@ -129,6 +129,7 @@ def T(dx, dy, dz):
         [dx, dy, dz, 1],
     ])
 
+
 def S(sx, sy, sz):
     """ Scale """
     return numpy.matrix([
@@ -137,6 +138,7 @@ def S(sx, sy, sz):
         [0, 0, sz, 0],
         [0, 0, 0, 1],
     ])
+
 
 def Rx(q):
     """ Rotation around x axis"""
@@ -148,6 +150,7 @@ def Rx(q):
         [0, 0, 0, 1],
     ])
 
+
 def Ry(q):
     """ Rotation around y axis"""
     sin_q, cos_q = sin(q), cos(q)
@@ -157,6 +160,7 @@ def Ry(q):
         [sin_q, 0, cos_q, 0],
         [0, 0, 0, 1],
     ])
+
 
 def Rz(q):
     """ Rotation around z axis"""
