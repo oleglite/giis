@@ -18,7 +18,10 @@ class FigureBuilder:
         k: distance between center of projection and projection plane (3d figures only)
         """
         self._figure_params = figure_params
-        self._projector = projection.Projector(k)
+
+        scene_size = figure_params['scene_size']
+        scene_center_point = tools.Point(scene_size.width / 2, scene_size.height / 2, 1000, 1)
+        self._projector = projection.Projector(scene_center_point)
 
     def build_figure(self, figure_cls, pixels):
         if issubclass(figure_cls, Figure3D):
@@ -199,15 +202,15 @@ class Cube(Figure3D):
         size = self._size
 
         self._points = [
-            self.context.point(x0, y0, 0),
-            self.context.point(x0 + size, y0, 0),
-            self.context.point(x0 + size, y0 + size, 0),
-            self.context.point(x0, y0 + size, 0),
+            tools.Point(x0, y0, 0, 1),
+            tools.Point(x0 + size, y0, 0, 1),
+            tools.Point(x0 + size, y0 + size, 0, 1),
+            tools.Point(x0, y0 + size, 0, 1),
 
-            self.context.point(x0, y0, size),
-            self.context.point(x0 + size, y0, size),
-            self.context.point(x0 + size, y0 + size, size),
-            self.context.point(x0, y0 + size, size),
+            tools.Point(x0, y0, size, 1),
+            tools.Point(x0 + size, y0, size, 1),
+            tools.Point(x0 + size, y0 + size, size, 1),
+            tools.Point(x0, y0 + size, size, 1),
         ]
 
     def set_pixel(self, pixel, pixel_number):

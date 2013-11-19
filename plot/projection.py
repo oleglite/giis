@@ -6,16 +6,14 @@ import figure
 
 
 class Projector(object):
-    def __init__(self, k):
-        self._k = k
-
-    def point(self, x, y, z, w=1.0):
-        return tools.Point(x, y, z, w)
+    def __init__(self, projection_point):
+        self._projection_point = projection_point
 
     def project_point(self, point):
+        xp, yp, zp, wp = self._projection_point
         x0, y0, z0, w0 = point
-        x = self._k * x0 / (z0 + self._k)
-        y = self._k * y0 / (z0 + self._k)
+        x = xp + (x0 - xp) * zp / (z0 + zp)
+        y = yp + (y0 - yp) * zp / (z0 + zp)
         return tools.Pixel(x, y)
 
     def project_line(self, line):
