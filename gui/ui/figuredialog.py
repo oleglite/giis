@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'figuredialog.ui'
 #
-# Created: Thu Nov  7 10:59:59 2013
-#      by: pyside-uic 0.2.13 running on PySide 1.1.1
+# Created: Thu Nov 21 19:23:30 2013
+#      by: pyside-uic 0.2.14 running on PySide 1.1.2
 #
 # WARNING! All changes made in this file will be lost!
 

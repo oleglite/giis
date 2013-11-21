@@ -57,9 +57,22 @@
      <x>0</x>
      <y>0</y>
      <width>571</width>
-     <height>24</height>
+     <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="draw_menu">
+    <property name="title">
+     <string>Нарисовать</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="help_menu">
+    <property name="title">
+     <string>Справка</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <addaction name="draw_menu"/>
+   <addaction name="help_menu"/>
   </widget>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
@@ -157,6 +170,11 @@
    </property>
    <property name="text">
     <string>enableSpecial</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>О программе</string>
    </property>
   </action>
  </widget>

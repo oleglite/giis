@@ -4,6 +4,7 @@
 from qt import *
 
 from ui.figuredialog import Ui_Dialog
+from ui.aboutdialog import Ui_AboutDialog
 
 
 class FigureDialog(QDialog, Ui_Dialog):
@@ -58,3 +59,10 @@ class FigureDialog(QDialog, Ui_Dialog):
         dialog = FigureDialog(figure_cls)
         dialog.exec_()
         return dialog.params
+
+
+class AboutDialog(QDialog, Ui_AboutDialog):
+    def __init__(self, parent=None):
+        super(AboutDialog, self).__init__(parent)
+        self.setupUi(self)
+        self.layout().setSizeConstraint(QLayout.SetFixedSize)

@@ -8,17 +8,19 @@ import tools
 import scroll_area
 import plot_view
 import plot.algorithms
+import dialogs
 from ui.mainwindow import Ui_MainWindow
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     INIT_PIXEL_SIZE = 16
     SCENE_SIZE = tools.Size(1000, 800)
-    DRAW_MENU_TITLE = u'Нарисовать'
 
     def __init__(self):
         super(MainWindow, self).__init__()
         self.setupUi(self)
+
+        self.__about_dialog = dialogs.AboutDialog(self)
 
         self._init_scene()
         self._init_scroll_area()
@@ -51,35 +53,36 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._scene_controller.set_algorithm(algorithm_name)
 
     def _init_menus(self):
-        self.menuBar().addMenu(self._create_draw_menu())
+        self._init_draw_menu()
 
-    def _create_draw_menu(self):
-        draw_menu = QMenu(self.DRAW_MENU_TITLE)
-
+    def _init_draw_menu(self):
         figure_menus = {}
 
         for name, algorithm in plot.algorithms.by_name.iteritems():
             if algorithm.Figure not in figure_menus:
                 figure_menu = QMenu(algorithm.Figure.NAME)
                 figure_menus[algorithm.Figure] = figure_menu
-                draw_menu.addMenu(figure_menu)
+                self.draw_menu.addMenu(figure_menu)
 
             figure_menu = figure_menus[algorithm.Figure]
             alg_action = QAction(algorithm.NAME, figure_menu)
             figure_menu.addAction(alg_action)
 
-        draw_menu.triggered.connect(self._change_algorithm)
-        return draw_menu
+        self.draw_menu.triggered.connect(self._change_algorithm)
 
     def _connect_signals(self):
         self.actionNext.setEnabled(False)
 
+        # TOOLBAR
         self.actionClean.triggered.connect(self._scene_view.clear_scene)
         self.actionDebug.toggled.connect(self._enable_debug)
         self.actionNext.triggered.connect(self._scene_controller.debug_next)
         self.actionNext.triggered.connect(self._scene_view.repaint)
         self.actionEnableGrid.toggled.connect(self._scene_view.set_grid_enabled)
         self.actionEnableSpecial.toggled.connect(self._scene_view.set_special_enabled)
+
+        # MENUS
+        self.actionAbout.triggered.connect(self.__about_dialog.show)
 
         self.debugTextBrowser.setVisible(self.actionDebug.isChecked())
         self._scene_controller.debug_log.connect(self._add_debug_message)
