@@ -3,6 +3,8 @@
 
 from qt import *
 
+from typedconf.gui.pyside import FieldsWidget
+
 from ui.figuredialog import Ui_Dialog
 from ui.aboutdialog import Ui_AboutDialog
 
@@ -66,3 +68,29 @@ class AboutDialog(QDialog, Ui_AboutDialog):
         super(AboutDialog, self).__init__(parent)
         self.setupUi(self)
         self.layout().setSizeConstraint(QLayout.SetFixedSize)
+
+
+class ConfigDialog(QDialog):
+    def __init__(self, config):
+        super(ConfigDialog, self).__init__()
+
+        self.__fields_widget = FieldsWidget(config)
+        self.__error_message_box = QMessageBox(self)
+
+        self.__save_button = QPushButton('save')
+        self.__save_button.clicked.connect(self.save_fields)
+
+        dialog_layout = QVBoxLayout()
+        dialog_layout.addWidget(self.__fields_widget)
+        dialog_layout.addWidget(self.__save_button)
+        self.setLayout(dialog_layout)
+
+    def save_fields(self):
+        errors = self.__fields_widget.save_fields()
+        if not errors:
+            self.close()
+            return
+
+        self.__error_message_box.setText(r'<h4>%s errors<\h4>' % len(errors))
+        self.__error_message_box.setInformativeText('\n'.join(errors))
+        self.__error_message_box.show()

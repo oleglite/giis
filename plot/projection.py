@@ -4,9 +4,13 @@
 import tools
 import figure
 
+import numpy
 
 class Projector(object):
-    def __init__(self, projection_point):
+    def __init__(self):
+        self._projection_point = None
+
+    def set_projection_point(self, projection_point):
         self._projection_point = projection_point
 
     def project_point(self, point):

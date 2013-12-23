@@ -11,7 +11,7 @@ import tools
 
 MOVE = 'MOVE'
 ROTATE = 'ROTATE'
-SCALSE = 'SCALE'
+SCALE = 'SCALE'
 AXIS_X = 'AXIS_X'
 AXIS_Y = 'AXIS_Y'
 AXIS_Z = 'AXIS_Z'
@@ -33,27 +33,43 @@ TRANSFORM_SHORTCUTS = dict(
     MOVE_Z_POS = (MOVE, POSITIVE, AXIS_Z),
     MOVE_Z_NEG = (MOVE, NEGATIVE, AXIS_Z),
 
-    SCALE_X_POS = (SCALSE, POSITIVE, AXIS_X),
-    SCALE_X_NEG = (SCALSE, NEGATIVE, AXIS_X),
-    SCALE_Y_POS = (SCALSE, POSITIVE, AXIS_Y),
-    SCALE_Y_NEG = (SCALSE, NEGATIVE, AXIS_Y),
-    SCALE_Z_POS = (SCALSE, POSITIVE, AXIS_Z),
-    SCALE_Z_NEG = (SCALSE, NEGATIVE, AXIS_Z),
+    SCALE_X_POS = (SCALE, POSITIVE, AXIS_X),
+    SCALE_X_NEG = (SCALE, NEGATIVE, AXIS_X),
+    SCALE_Y_POS = (SCALE, POSITIVE, AXIS_Y),
+    SCALE_Y_NEG = (SCALE, NEGATIVE, AXIS_Y),
+    SCALE_Z_POS = (SCALE, POSITIVE, AXIS_Z),
+    SCALE_Z_NEG = (SCALE, NEGATIVE, AXIS_Z),
 )
 
 
-class FigureTransformator(object):
-    def __init__(self, move_delta=1, rotate_angle=.1, scale_factor=1.2):
-        self._move_delta = move_delta
-        self._rotate_angle = rotate_angle
-        self._scale_delta = scale_factor
+class FigureTransformer(object):
+    def __init__(self, config):
+        self.__config = config
+        self._transforms = None
+
+        self.__config.add_updated_handler(self.__create_transforms)
+        self.__create_transforms()
+
+    def transform(self, figure, shortcut):
+        transform, direction, axis = TRANSFORM_SHORTCUTS[shortcut]
+        transform_matrix = self._transforms[transform][direction][axis]
+
+        if transform == MOVE:
+            figure.apply_matrix(transform_matrix)
+        else:
+            self.__from_center(figure, transform_matrix)
+
+    def __create_transforms(self):
+        move_delta = self.__config.get_value('MOVE_DELTA')
+        rotate_angle = self.__config.get_value('ROTATE_ANGLE')
+        scale_factor = self.__config.get_value('SCALE_FACTOR')
 
         self._transforms = {
             MOVE: {
                 POSITIVE: {
                     AXIS_X: T(move_delta, 0, 0),
                     AXIS_Y: T(0, move_delta, 0),
-                    AXIS_Z: T(0, 0, self._move_delta),
+                    AXIS_Z: T(0, 0, move_delta),
                 },
                 NEGATIVE: {
                     AXIS_X: T(-move_delta, 0, 0),
@@ -73,7 +89,7 @@ class FigureTransformator(object):
                     AXIS_Z: Rz(-rotate_angle),
                 },
             },
-            SCALSE: {
+            SCALE: {
                 POSITIVE: {
                     AXIS_X: S(scale_factor, 1, 1),
                     AXIS_Y: S(1, scale_factor, 1),
@@ -86,15 +102,6 @@ class FigureTransformator(object):
                 },
             }
         }
-
-    def transform(self, figure, shortcut):
-        transform, direction, axis = TRANSFORM_SHORTCUTS[shortcut]
-        transform_matrix = self._transforms[transform][direction][axis]
-
-        if transform == MOVE:
-            figure.apply_matrix(transform_matrix)
-        else:
-            self.__from_center(figure, transform_matrix)
 
     def __from_center(self, figure, transform_matrix):
         xc, yc, zc, wc = figure.center()

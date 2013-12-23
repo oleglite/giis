@@ -3,6 +3,7 @@
 
 
 from qt import *
+import typedconf
 
 import tools
 import scroll_area
@@ -10,6 +11,25 @@ import plot_view
 import plot.algorithms
 import dialogs
 from ui.mainwindow import Ui_MainWindow
+
+
+config_schema = (
+    ('MOVE_DELTA', int),
+    ('ROTATE_ANGLE', float),
+    ('SCALE_FACTOR', float),
+    ('PROJECTION_Z', int),
+    ('SCENE_WIDTH', int),
+    ('SCENE_HEIGHT', int)
+)
+
+config_default_values = (
+    ('MOVE_DELTA', 5),
+    ('ROTATE_ANGLE', 0.3),
+    ('SCALE_FACTOR', 1.2),
+    ('PROJECTION_Z', 1000),
+    ('SCENE_WIDTH', 1000),
+    ('SCENE_HEIGHT', 800)
+)
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -20,7 +40,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__()
         self.setupUi(self)
 
+        self.config = typedconf.build_config_class(config_schema)(config_default_values)
+        self.SCENE_SIZE = tools.Size(self.config.get_value('SCENE_WIDTH'), self.config.get_value('SCENE_HEIGHT'))
+
         self.__about_dialog = dialogs.AboutDialog(self)
+        self.__config_dialog = dialogs.ConfigDialog(self.config)
 
         self._init_scene()
         self._init_scroll_area()
@@ -30,7 +54,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._connect_signals()
 
     def _init_scene(self):
-        self._scene_view = plot_view.init_scene(self.SCENE_SIZE)
+        self._scene_view = plot_view.init_scene(self.config)
         self._scene_controller = self._scene_view.get_controller()
 
     def _init_scroll_area(self):
@@ -83,6 +107,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # MENUS
         self.actionAbout.triggered.connect(self.__about_dialog.show)
+        self.actionConfig.triggered.connect(self.__config_dialog.show)
 
         self.debugTextBrowser.setVisible(self.actionDebug.isChecked())
         self._scene_controller.debug_log.connect(self._add_debug_message)

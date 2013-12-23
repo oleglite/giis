@@ -12,23 +12,28 @@ def is_3d_figure(figure):
     return isinstance(figure, Figure3D)
 
 class FigureBuilder:
-    def __init__(self, figure_params, k):
-        """
-        figure_params: params that will added to all figures
-        k: distance between center of projection and projection plane (3d figures only)
-        """
-        self._figure_params = figure_params
+    def __init__(self, config):
+        self.config = config
+        self.scene_size = tools.Size(config.get_value('SCENE_WIDTH'), config.get_value('SCENE_HEIGHT'))
+        self._projector = projection.Projector()
+        self.__update_projection_point()
 
-        scene_size = figure_params['scene_size']
-        scene_center_point = tools.Point(scene_size.width / 2, scene_size.height / 2, 1000, 1)
-        self._projector = projection.Projector(scene_center_point)
+        # when config updated call __update_projection_point
+        config.add_updated_handler(self.__update_projection_point)
 
     def build_figure(self, figure_cls, pixels):
         if issubclass(figure_cls, Figure3D):
             figure = figure_cls(pixels, self._projector)
         else:
-            figure = figure_cls(pixels, self._figure_params)
+            figure = figure_cls(pixels, {'scene_size': self.scene_size})
         return figure
+
+    def __update_projection_point(self):
+        scene_center_point = tools.Point(self.scene_size.width / 2,
+                                         self.scene_size.height / 2,
+                                         self.config.get_value('PROJECTION_Z'),
+                                         1)
+        self._projector.set_projection_point(scene_center_point)
 
 
 class Figure(object):

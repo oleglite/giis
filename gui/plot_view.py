@@ -21,13 +21,13 @@ class SceneLook:
     special_size = 5
 
 
-def init_scene(scene_size):
+def init_scene(config):
     from plot.scene import Scene
     from plot_controller import Figure3DController
 
     scene = Scene()
-    view = SceneView(scene, scene_size)
-    controller = Figure3DController(view, scene)
+    view = SceneView(scene, tools.Size(config.get_value('SCENE_WIDTH'), config.get_value('SCENE_HEIGHT')))
+    controller = Figure3DController(view, scene, config)
 
     view.set_controller(controller)
 

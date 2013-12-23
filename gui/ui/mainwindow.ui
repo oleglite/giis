@@ -71,7 +71,14 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="settings_menu">
+    <property name="title">
+     <string>Настройки</string>
+    </property>
+    <addaction name="actionConfig"/>
+   </widget>
    <addaction name="draw_menu"/>
+   <addaction name="settings_menu"/>
    <addaction name="help_menu"/>
   </widget>
   <widget class="QToolBar" name="toolBar">
@@ -175,6 +182,11 @@
   <action name="actionAbout">
    <property name="text">
     <string>О программе</string>
+   </property>
+  </action>
+  <action name="actionConfig">
+   <property name="text">
+    <string>Параметры</string>
    </property>
   </action>
  </widget>

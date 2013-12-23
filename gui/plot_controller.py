@@ -31,21 +31,23 @@ KEYS_BINDINGS = dict(
     SCALE_Z_NEG = (Qt.Key_Q, Qt.NoModifier),
 )
 
+
 class SceneController(QObject):
     debug_log = Signal(str)
     figure_selected = Signal(str)
     algorithm_changed = Signal(str)
 
-    def __init__(self, view, scene):
+    def __init__(self, view, scene, config):
         super(SceneController, self).__init__()
         self._view = view
         self._scene = scene
+        self._config = config
 
         self._clicks = []
         self._current_algorithm = None
         self._selected_figure = None
 
-        self._figure_builder = plot.figure.FigureBuilder({'scene_size': self._view.scene_size}, 1000)
+        self._figure_builder = plot.figure.FigureBuilder(self._config)
 
         self._scene.debug_next_message.connect(self.debug_log)
 
@@ -110,8 +112,8 @@ class SceneController(QObject):
 
 
 class SpecialController(SceneController):
-    def __init__(self, view, scene):
-        super(SpecialController, self).__init__(view, scene)
+    def __init__(self, view, scene, config):
+        super(SpecialController, self).__init__(view, scene, config)
         self._special_size = view.look.special_size
         self._pressed_special = None
 
@@ -138,18 +140,16 @@ class SpecialController(SceneController):
 
 
 class Figure3DController(SpecialController):
-
-
-    def __init__(self, view, scene):
-        super(Figure3DController, self).__init__(view, scene)
-        self._transofrmator = plot.transform.FigureTransformator()
+    def __init__(self, view, scene, config):
+        super(Figure3DController, self).__init__(view, scene, config)
+        self._transformer = plot.transform.FigureTransformer(self._config)
 
     def key_pressed(self, pressed_key, pressed_modifiers):
         if plot.figure.is_3d_figure(self._selected_figure):
             for transform_shortcut in KEYS_BINDINGS:
                 key, modifiers = KEYS_BINDINGS[transform_shortcut]
                 if pressed_key == key and modifiers == pressed_modifiers:
-                    self._transofrmator.transform(self._selected_figure, transform_shortcut)
+                    self._transformer.transform(self._selected_figure, transform_shortcut)
                     break
 
         super(Figure3DController, self).key_pressed(pressed_key, pressed_modifiers)

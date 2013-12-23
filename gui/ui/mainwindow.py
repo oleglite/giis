@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Thu Nov 21 19:23:28 2013
+# Created: Mon Dec 23 12:22:50 2013
 #      by: pyside-uic 0.2.14 running on PySide 1.1.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -43,6 +43,8 @@ class Ui_MainWindow(object):
         self.draw_menu.setObjectName("draw_menu")
         self.help_menu = QtGui.QMenu(self.menubar)
         self.help_menu.setObjectName("help_menu")
+        self.settings_menu = QtGui.QMenu(self.menubar)
+        self.settings_menu.setObjectName("settings_menu")
         MainWindow.setMenuBar(self.menubar)
         self.toolBar = QtGui.QToolBar(MainWindow)
         self.toolBar.setObjectName("toolBar")
@@ -88,8 +90,12 @@ class Ui_MainWindow(object):
         self.actionEnableSpecial.setObjectName("actionEnableSpecial")
         self.actionAbout = QtGui.QAction(MainWindow)
         self.actionAbout.setObjectName("actionAbout")
+        self.actionConfig = QtGui.QAction(MainWindow)
+        self.actionConfig.setObjectName("actionConfig")
         self.help_menu.addAction(self.actionAbout)
+        self.settings_menu.addAction(self.actionConfig)
         self.menubar.addAction(self.draw_menu.menuAction())
+        self.menubar.addAction(self.settings_menu.menuAction())
         self.menubar.addAction(self.help_menu.menuAction())
         self.toolBar.addAction(self.actionClean)
         self.toolBar.addAction(self.actionEnableSpecial)
@@ -105,6 +111,7 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "giis", None, QtGui.QApplication.UnicodeUTF8))
         self.draw_menu.setTitle(QtGui.QApplication.translate("MainWindow", "Нарисовать", None, QtGui.QApplication.UnicodeUTF8))
         self.help_menu.setTitle(QtGui.QApplication.translate("MainWindow", "Справка", None, QtGui.QApplication.UnicodeUTF8))
+        self.settings_menu.setTitle(QtGui.QApplication.translate("MainWindow", "Настройки", None, QtGui.QApplication.UnicodeUTF8))
         self.toolBar.setWindowTitle(QtGui.QApplication.translate("MainWindow", "toolBar", None, QtGui.QApplication.UnicodeUTF8))
         self.actionClean.setText(QtGui.QApplication.translate("MainWindow", "clean", None, QtGui.QApplication.UnicodeUTF8))
         self.actionClean.setToolTip(QtGui.QApplication.translate("MainWindow", "Очистить", None, QtGui.QApplication.UnicodeUTF8))
@@ -115,5 +122,6 @@ class Ui_MainWindow(object):
         self.actionEnableGrid.setText(QtGui.QApplication.translate("MainWindow", "enable grid", None, QtGui.QApplication.UnicodeUTF8))
         self.actionEnableSpecial.setText(QtGui.QApplication.translate("MainWindow", "enableSpecial", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAbout.setText(QtGui.QApplication.translate("MainWindow", "О программе", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionConfig.setText(QtGui.QApplication.translate("MainWindow", "Параметры", None, QtGui.QApplication.UnicodeUTF8))
 
 import resources_rc
